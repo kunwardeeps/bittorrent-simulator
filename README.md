@@ -1,1 +1,1 @@
-# bitcoin-simulator
+# BitTorrent Simulator
