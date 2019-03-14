@@ -68,6 +68,7 @@ public class Client implements Runnable {
 				inputStream.readFully(messageLength);
 			}
 			catch (EOFException e) {
+			
 				System.exit(0);
 			}
 			catch (Exception e) {
