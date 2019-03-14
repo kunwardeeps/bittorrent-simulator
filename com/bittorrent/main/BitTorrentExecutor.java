@@ -6,10 +6,12 @@ public class BitTorrentExecutor {
 	public static String peerId;
 
 	public static void main(String args[]) throws IOException {
-		if(args!=null && args.length>0)
+		if (args.length > 0) {
 			peerId = args[0];
-		else
+		}
+		else {
 			peerId = "1003";
+		}
 		init();
 
 	}

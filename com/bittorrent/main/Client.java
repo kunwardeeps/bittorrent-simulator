@@ -4,8 +4,6 @@ import java.io.DataInputStream;
 import java.io.EOFException;
 import java.net.Socket;
 import java.nio.ByteBuffer;
-import Common.MainModule.CommonProperties;
-import DAL.MainModule.DataController;
 
 public class Client implements Runnable {
 	private DataInputStream inputStream;

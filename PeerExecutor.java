@@ -2,9 +2,9 @@ import java.io.IOException;
 
 import com.bittorrent.main.*;
 
-public class peerProcess {
+public class PeerExecutor {
 
 	public static void main (String args[]) throws IOException {
-		BitTorrentMainController.main(args);
+		BitTorrentExecutor.main(args);
 	}
 }
