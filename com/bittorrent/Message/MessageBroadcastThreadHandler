@@ -1,0 +1,80 @@
+  package Message;
+
+import Connection.MainModule.*;
+
+import java.util.concurrent.*;
+
+public class MsgBroadcastThreadHandler extends Thread {
+	private BlockingQueue<Object[]> seq;
+	private MessageRegulator messageRegulator;
+	private ConnectionModel connection;
+	private MessageTemplate.Type messageType;
+	private int pieceIndex;
+	private static MsgBroadcastThreadHandler instance;
+
+	private MsgBroadcastThreadHandler() {
+		seq = new LinkedBlockingQueue<>();
+		messageRegulator = MessageRegulator.getInstance();
+		connection = null;
+		messageType = null;
+		pieceIndex = Integer.MIN_VALUE;
+	}
+
+	private static BitField getObject() {
+		synchronized (BitField.class) {
+			if (bf == null) {
+				bf = new BitField();
+			}
+		}
+		return bf;
+	}
+	
+	public static MsgBroadcastThreadHandler getInstance() {
+		synchronized (MessageBroadcastThreadHandler.class) {
+			if (instance == null) {
+				instance = new MessageBroadcastThreadHandler();
+				instance.start();
+			}
+		}
+		return instance;
+	}
+
+	public synchronized void addMessage(Object[] data) {
+		try {
+			seq.put(data);
+		}
+		catch (InterruptedException e) {
+			// TODO: Check with Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public void run() {
+		while (true) {
+			Object[] data = retrieveMessage();
+			connection = (ConnectionModel) data[0];
+			messageType = (MessageTemplate.Type) data[1];
+			pieceIndex = (int) data[2];
+			System.out.println(
+					"Broadcaster: Building " + messageType + pieceIndex + " to peer " + connection.getRemotePeerId());
+			int messageLength = messageRegulator.getMessageLength(messageType, pieceIndex);
+			byte[] payload = messageRegulator.getMessagePayload(messageType, pieceIndex);
+			connection.sendMessage(messageLength, payload);
+			System.out.println("Broadcaster: Sending " + messageType + " to peer " + connection.getRemotePeerId());
+
+		}
+	}
+
+	private Object[] retrieveMessage() {
+		Object[] data = null;
+		try {
+			data = seq.take();
+		} catch (InterruptedException e) {
+			// TODO : Check with Auto-generated catch block
+			e.printStackTrace();
+		}
+		return data;
+	}
+
+}
