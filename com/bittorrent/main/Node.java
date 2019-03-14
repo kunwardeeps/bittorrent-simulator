@@ -1,4 +1,4 @@
-package BKSTorrent.MainModule;
+package com.bittorent.main;
 
 import Connection.MainModule.*;
 import java.net.ServerSocket;

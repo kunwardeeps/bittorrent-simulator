@@ -1,4 +1,4 @@
-package BKSTorrent.MainModule;
+package com.bittorent.main;
 
 import java.io.DataInputStream;
 import java.io.EOFException;

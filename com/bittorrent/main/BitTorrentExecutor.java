@@ -1,12 +1,8 @@
-package BKSTorrent.MainModule;
-
-import Common.MainModule.*;
-import DAL.MainModule.*;
-import Message.MainModule.*;
+package com.bittorrent.main;
 
 import java.io.IOException;
 
-public class BitTorrentMainController {
+public class BitTorrentExecutor {
 	public static String peerId;
 
 	public static void main(String args[]) throws IOException {
