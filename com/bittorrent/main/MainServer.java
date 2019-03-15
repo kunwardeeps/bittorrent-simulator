@@ -5,13 +5,15 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.SocketException;
-import java.util.concurrent.*;
+import java.util.ArrayList;
+import java.util.List;
 
-
-
+/**
+ * 
+ */
 public class MainServer implements Runnable {
-	protected BlockingQueue<Integer> outboundMessageLengthQueue;
-	protected BlockingQueue<byte[]> outboundMessageQueue;
+	protected List<Integer> outboundMessageLengthQueue;
+	protected List<byte[]> outboundMessageQueue;
 	private Socket socket;
 	private DataOutputStream outputDataStream;
 	private boolean isConnectionActive;
@@ -19,8 +21,8 @@ public class MainServer implements Runnable {
 	// client thread initialization
 	public MainServer(Socket clientSocket, String id) {
 
-		outboundMessageLengthQueue = new LinkedBlockingQueue<>();
-		outboundMessageQueue = new LinkedBlockingQueue<>();
+		outboundMessageLengthQueue = new ArrayList<>();
+		outboundMessageQueue = new ArrayList<>();
 		isConnectionActive = true;
 		this.socket = clientSocket;
 		try {
@@ -39,8 +41,8 @@ public class MainServer implements Runnable {
 
 			//needed to update the controller.
 
-		outboundMessageLengthQueue = new LinkedBlockingQueue<>();
-		outboundMessageQueue = new LinkedBlockingQueue<>();
+		outboundMessageLengthQueue = new ArrayList<>();
+		outboundMessageQueue = new ArrayList<>();
 		isConnectionActive = true;
 		this.socket = clientSocket;
 		try {
@@ -87,23 +89,19 @@ public class MainServer implements Runnable {
 	}
 
 	private void sendMessageLength() throws Exception{
-		int messageLength = outboundMessageLengthQueue.take();
+		int messageLength = outboundMessageLengthQueue.size();
 		outputDataStream.writeInt(messageLength);
 		outputDataStream.flush();
 	}
 
 	private void sendMessageData() throws Exception{
-		byte[] message = outboundMessageQueue.take();
+		byte[] message = outboundMessageQueue.get(0);
 		outputDataStream.write(message);
 		outputDataStream.flush();
 	}
 
 	public void addMessage(int length, byte[] payload) {
-		try {
-			outboundMessageLengthQueue.put(length);
-			outboundMessageQueue.put(payload);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+		outboundMessageLengthQueue.add(length);
+		outboundMessageQueue.add(payload);
 	}
 }

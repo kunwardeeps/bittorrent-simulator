@@ -7,6 +7,9 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Map;
 
+/**
+ * Class that represents the individual peer in BitTorrent system
+ */
 public class Node {
 	private static Node current = new Node();
 	public static boolean FileReceived = false;

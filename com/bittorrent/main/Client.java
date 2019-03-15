@@ -5,6 +5,9 @@ import java.io.EOFException;
 import java.net.Socket;
 import java.nio.ByteBuffer;
 
+/**
+ * Utility Class for sending TCP requests to peers
+ */
 public class Client implements Runnable {
 	private DataInputStream inputStream;
 	private boolean downloadActive;
