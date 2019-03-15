@@ -1,21 +1,24 @@
 package com.bittorrent.dtos;
 
+import com.bittorrent.main.Client;
+import com.bittorrent.main.MainServer;
+
 import java.net.Socket;
 
 public class ConnectionDTO {
 
-	private Server server;
+	private MainServer server;
 	private Client client;
 	private double bytesTransferred;
 	private Socket peerSocket;
 	private String remotePeerId;
 	private boolean isConnectionChoked;
 
-    public Server getServer() {
+    public MainServer getServer() {
         return server;
     }
 
-    public void setServer(Server server) {
+    public void setServer(MainServer server) {
         this.server = server;
     }
 
@@ -59,7 +62,7 @@ public class ConnectionDTO {
         isConnectionChoked = connectionChoked;
     }
 
-    public ConnectionDTO(Server server, Client client, double bytesTransferred,
+    public ConnectionDTO(MainServer server, Client client, double bytesTransferred,
                          Socket peerSocket, String remotePeerId, boolean isConnectionChoked) {
         this.server = server;
         this.client = client;

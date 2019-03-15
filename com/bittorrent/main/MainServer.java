@@ -1,4 +1,5 @@
-package com.bittorent.main;
+
+package com.bittorrent.main;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -6,10 +7,9 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.util.concurrent.*;
 
-import Common.MainModule.CommonProperties;
-import DAL.MainModule.DataController;
 
-public class Server implements Runnable {
+
+public class MainServer implements Runnable {
 	protected BlockingQueue<Integer> outboundMessageLengthQueue;
 	protected BlockingQueue<byte[]> outboundMessageQueue;
 	private Socket socket;
@@ -17,11 +17,8 @@ public class Server implements Runnable {
 	private boolean isConnectionActive;
 
 	// client thread initialization
-	public Server(Socket clientSocket, String id, DataController data) {
-		DataController currentController = data;
-		if(data!=null){
-			//needed to update the controller.
-		}
+	public MainServer(Socket clientSocket, String id) {
+
 		outboundMessageLengthQueue = new LinkedBlockingQueue<>();
 		outboundMessageQueue = new LinkedBlockingQueue<>();
 		isConnectionActive = true;
@@ -37,12 +34,11 @@ public class Server implements Runnable {
 	}
 
 	// server thread initialization
-	public Server(Socket clientSocket, DataController data) {
+	public MainServer(Socket clientSocket) {
 
-		DataController currentController = data;
-		if(data!=null){
+
 			//needed to update the controller.
-		}
+
 		outboundMessageLengthQueue = new LinkedBlockingQueue<>();
 		outboundMessageQueue = new LinkedBlockingQueue<>();
 		isConnectionActive = true;
@@ -57,11 +53,8 @@ public class Server implements Runnable {
 		}
 	}
 
-	private void init(Socket clientSocket, DataController data) {
-		DataController currentController = data;
-		if(data!=null){
-			//needed to update the controller.
-		}
+	private void init(Socket clientSocket) {
+
 		if(outputDataStream!=null) {
 			try {
 				outputDataStream = new DataOutputStream(socket.getOutputStream());
@@ -87,10 +80,8 @@ public class Server implements Runnable {
 			}
 			catch (SocketException e) {
 				isConnectionActive = false;
-				CommonProperties.DisplayMessageForUser(this,e.getMessage());
 			}
 			catch (Exception e) {
-				CommonProperties.DisplayMessageForUser(this,e.getMessage());
 			}
 		}
 	}

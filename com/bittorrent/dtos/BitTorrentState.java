@@ -129,6 +129,14 @@ public class BitTorrentState {
 		System.out.println("BitTorrent current state - Number of pieces: " + numberOfChunks);
 	}
 
+	public static String getPeerLogFilePath() {
+		return PropertiesEnum.PEER_LOG_FILE_PATH.getValue();
+	}
+
+	public static String getPeerLogFileExtension() {
+		return PropertiesEnum.PEER_LOG_FILE_EXTENSION.getValue();
+	}
+
 	static {
 		int networkId = 1;
 		Scanner sc = null;

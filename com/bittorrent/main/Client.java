@@ -1,4 +1,4 @@
-package com.bittorent.main;
+package com.bittorrent.main;
 
 import java.io.DataInputStream;
 import java.io.EOFException;
@@ -7,21 +7,19 @@ import java.nio.ByteBuffer;
 
 public class Client implements Runnable {
 	private DataInputStream inputStream;
-	private boolean DownloadActive;
-	private DataController sharedData;
+	private boolean downloadActive;
 	private Socket currentSocket;
 
 
-		public Client(Socket socket, DataController data) {
+	public Client(Socket socket) {
 		this.currentSocket = socket;
-		sharedData = data;
-		DownloadActive = true;
+		downloadActive = true;
 		// Data Input Stream
 		try {
 			inputStream = new DataInputStream(socket.getInputStream());
 		}
 		catch (Exception e) {
-			CommonProperties.DisplayMessageForUser(this,e.getMessage());
+			System.out.println(e.getMessage());
 		}
 	}
 
@@ -32,6 +30,7 @@ public class Client implements Runnable {
 	}
 
 	public void receiveMessage() {
+
 		while (DownloadActive()) {
 			// Receive Message
 			int messageLength = Integer.MIN_VALUE;
@@ -41,16 +40,14 @@ public class Client implements Runnable {
 			}
 			byte[] message = new byte[messageLength];
 			receiveMessageData(message);
-			
-			// Add Payload
-			sharedData.addPayload(message);
+
 		}
 
 	}
 	
 	private synchronized boolean DownloadActive() {
 
-		return DownloadActive;
+		return downloadActive;
 	}
 	
 	public void close()
@@ -77,7 +74,7 @@ public class Client implements Runnable {
 			}
 			lengthofResponse = ByteBuffer.wrap(messageLength).getInt();
 		} catch (Exception e) {
-			CommonProperties.DisplayMessageForUser(this,e.getMessage());
+			System.out.println(e.getMessage());
 		}
 		return lengthofResponse;
 	}
@@ -105,7 +102,7 @@ public class Client implements Runnable {
 			}
 		}
 		catch (Exception ex){
-			CommonProperties.DisplayMessageForUser(null," Client not terminated properly");
+			System.out.println(" Client not terminated properly");
 			return false;
 		}
 		return false;

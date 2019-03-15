@@ -1,12 +1,16 @@
 package com.bittorrent.utils;
 
 import com.bittorrent.dtos.BitTorrentState;
+import com.bittorrent.dtos.ConnectionDTO;
+import com.bittorrent.main.Node;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Timestamp;
+import java.util.Iterator;
+import java.util.List;
 
 /***
  * Logger utility class designed as Singleton to
@@ -34,7 +38,7 @@ public class Logger {
 	private Logger() {
 		try {
 			System.out.println("Logger instantiated for peer: "
-					+ Node.getInstance().getNetwork().getPeerId());
+					+ Node.getInstance().getPeerDTO().getPeerId());
 			File file = makeLogDirectoryForPeer();
 			initPrintWriter(file);
 		}
@@ -45,8 +49,8 @@ public class Logger {
 
 	private File makeLogDirectoryForPeer() throws Exception{
 
-		String path = BitTorrentState.PEER_LOG_FILE_PATH + Node.getInstance().getNetwork().getPeerId()
-				+ BitTorrentState.PEER_LOG_FILE_EXTENSION;
+		String path = BitTorrentState.getPeerLogFilePath() + Node.getInstance().getPeerDTO().getPeerId()
+				+ BitTorrentState.getPeerLogFileExtension();
 
 		File file = new File(path);
 		file.getParentFile().mkdirs();
@@ -64,7 +68,7 @@ public class Logger {
 	private String getTimeStamp() {
 
 		Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-		timestamp.toString();
+		return timestamp.toString();
 	}
 
 	private void writeFile(String message) {
@@ -105,7 +109,7 @@ public class Logger {
 				+ ".");
 	}
 
-	public void logChangePreferredNeighbors(String peerId, List<ConnectionModel> prefNeighbors) {
+	public void logChangePreferredNeighbors(String peerId, List<ConnectionDTO> prefNeighbors) {
 
 		StringBuilder message = new StringBuilder();
 		message.append(getTimeStamp());
@@ -113,7 +117,7 @@ public class Logger {
 		message.append(peerId);
 		message.append(" has changed the preferred neighbors ");
 		String separator = "";
-		Iterator<ConnectionModel> iter = peers.iterator();
+		Iterator<ConnectionDTO> iter = prefNeighbors.iterator();
 
 		while (iter.hasNext()) {
 

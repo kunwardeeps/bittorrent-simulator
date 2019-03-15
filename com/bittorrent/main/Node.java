@@ -1,24 +1,23 @@
-package com.bittorent.main;
+package com.bittorrent.main;
 
-import Connection.MainModule.*;
+import com.bittorrent.dtos.BitTorrentState;
+import com.bittorrent.dtos.PeerDTO;
+
 import java.net.ServerSocket;
-import Common.MainModule.CommonProperties;
-import java.util.HashMap;
 import java.net.Socket;
+import java.util.Map;
 
 public class Node {
 	private static Node current = new Node();
 	public static boolean FileReceived = false;
-	private NetworkModel networkModel;
-	ConnectionController connectionController;
+	private PeerDTO peerDTO;
 
 	private Node() {
-		networkModel = CommonProperties.getPeer(BitTorrentMainController.peerId);
-		connectionController = ConnectionController.getInstance();
+		peerDTO = BitTorrentState.getPeer(BitTorrentExecutor.peerId);
 	}
 
-	public NetworkModel getNetwork() {
-		return networkModel;
+	public PeerDTO getPeerDTO() {
+		return peerDTO;
 	}
 
 	public static Node getInstance() {
@@ -31,10 +30,9 @@ public class Node {
 			
 		ServerSocket socket = null;
 		try {
-			socket = new ServerSocket(networkModel.port);
+			socket = new ServerSocket(peerDTO.getPort());
 			while (!FileReceived) {
 				Socket peerSocket = socket.accept();
-				connectionController.createConnection(peerSocket);
 			}
 		}
 		catch (Exception e) {
@@ -52,11 +50,14 @@ public class Node {
 	}
 		// Start Outgoing Connections
 	public void startOutgoingConnection() {
-		HashMap<String, NetworkModel> map = CommonProperties.getPeerList();
-		int myNumber = networkModel.networkId;
+
+		Map<String, PeerDTO> map = BitTorrentState.getPeers();
+		int networkId = peerDTO.getNetworkId();
 		for (String peerId : map.keySet()) {
-			NetworkModel peerInfo = map.get(peerId);
-			if (peerInfo.networkId < myNumber) {
+
+			PeerDTO peerInfo = map.get(peerId);
+			if (peerDTO.getNetworkId() < networkId) {
+
 				new Thread() {
 					@Override
 					public void run() {
@@ -72,17 +73,17 @@ public class Node {
 	private void checkpeersRcvdFile(){
 		if(FileReceived){
 			if(current!=null){
-				CommonProperties.DisplayMessageForUser(null, "all peers Have recieved file.");
+				System.out.println("all peers Have recieved file.");
 			}
 		}
 	}
 
-	private void createConnection(NetworkModel peerInfo) {
-		int peerPort = peerInfo.port;
-		String peerHost = peerInfo.hostName;
+	private void createConnection(PeerDTO peerInfo) {
+		int peerPort = peerInfo.getPort();
+		String peerHost = peerInfo.getHostName();
 		try {
 			Socket clientSocket = new Socket(peerHost, peerPort);
-			connectionController.createConnection(clientSocket, peerInfo.getPeerId());
+			//TODO createConnection
 			Thread.sleep(300);
 		} catch (Exception e) {
 			e.printStackTrace();

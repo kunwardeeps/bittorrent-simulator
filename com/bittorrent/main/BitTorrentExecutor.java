@@ -1,5 +1,8 @@
 package com.bittorrent.main;
 
+import com.bittorrent.dtos.BitTorrentState;
+import com.bittorrent.utils.Logger;
+
 import java.io.IOException;
 
 public class BitTorrentExecutor {
@@ -10,23 +13,22 @@ public class BitTorrentExecutor {
 			peerId = args[0];
 		}
 		else {
-			peerId = "1003";
+			//default value
+			peerId = "1001";
 		}
 		init();
 
 	}
 
 	private static void init() {
-		CommonProperties.loadDataFromConfig();
-		MessageModel.setId(peerId);
-		if (CommonProperties.getPeer(peerId).hasSharedFile) {
-			FileHandler.getInstance().splitFile();
+		BitTorrentState.setStateFromConfigFiles();
+		if (BitTorrentState.getPeer(peerId).isHasSharedFile()) {
+			System.out.println("Shared file found with :"+ peerId);
 		}
-		System.out.println("I am peer :"+ peerId);
-		CommonProperties.DisplayConfigDetails();
+		System.out.println("Peer ID :"+ peerId);
+		BitTorrentState.showConfiguration();
 		Node current = Node.getInstance();
-		current.startOutGoingConnections();
-		current.startMonitoringIncomingConnections();
+		// TODO Start execution
 	}
 
 }
