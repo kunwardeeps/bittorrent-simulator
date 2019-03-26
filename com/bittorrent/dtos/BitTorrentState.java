@@ -1,39 +1,11 @@
 package com.bittorrent.dtos;
 
+import com.bittorrent.main.PropertiesEnum;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.*;
-
-enum PropertiesEnum {
-	NUMBER_OF_PREFERRED_NEIGHBORS("s"),
-	UNCHOKING_INTERVAL("UnchokingInterval"),
-	OPTIMISTIC_UNCHOKING_INTERVAL("OptimisticUnchokingInterval"),
-	FILENAME("FileName"),
-	FILESIZE("FileSize"),
-	PIECESIZE("PieceSize"),
-	PROPERTIES_CONFIG_PATH(System.getProperty("user.dir") + File.separatorChar
-			+ "Common.cfg"),
-	PROPERTIES_FILE_PATH(System.getProperty("user.dir") + File.separatorChar),
-	PROPERTIES_CREATED_FILE_PATH(System.getProperty("user.dir") + File.separatorChar
-			+ "project/peer_"),
-	PEER_PROPERTIES_CONFIG_PATH(System.getProperty("user.dir") + File.separatorChar
-			+ "PeerInfo.cfg"),
-	PEER_LOG_FILE_EXTENSION(".log"),
-	PEER_LOG_FILE_PATH(System.getProperty("user.dir") + File.separatorChar
-			+ "project/log_peer_");
-	
-	private final String value;
-
-	PropertiesEnum(String value) {
-		this.value = value;
-	}
-
-	String getValue() {
-		return value;
-	}
-}
-
 
 public class BitTorrentState {
 
@@ -138,6 +110,7 @@ public class BitTorrentState {
 	}
 
 	static {
+		setStateFromConfigFiles();
 		int networkId = 1;
 		Scanner sc = null;
 		try {
@@ -199,7 +172,7 @@ public class BitTorrentState {
 
 		Properties properties = new Properties();
 		try {
-			FileInputStream in = new FileInputStream(PropertiesEnum.PROPERTIES_CONFIG_PATH.getValue());
+			FileInputStream in = new FileInputStream(PropertiesEnum.COMMON_PROPERTIES_CONFIG_PATH.getValue());
 			properties.load(in);
 		}
 		catch (Exception ex) {

@@ -16,7 +16,7 @@ public class Node {
 	private PeerDTO peerDTO;
 
 	private Node() {
-		peerDTO = BitTorrentState.getPeer(BitTorrentExecutor.peerId);
+		peerDTO = BitTorrentState.getPeer(PeerProcessExecutor.peerId);
 	}
 
 	public PeerDTO getPeerDTO() {

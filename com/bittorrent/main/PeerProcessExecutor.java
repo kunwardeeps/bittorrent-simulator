@@ -5,10 +5,10 @@ import com.bittorrent.utils.Logger;
 
 import java.io.IOException;
 
-public class BitTorrentExecutor {
+public class PeerProcessExecutor {
 	public static String peerId;
 
-	public static void main(String args[]) throws IOException {
+	public static void main(String args[]) {
 		if (args.length > 0) {
 			peerId = args[0];
 		}
