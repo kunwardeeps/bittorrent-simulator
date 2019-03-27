@@ -109,8 +109,7 @@ public class BitTorrentState {
 		return PropertiesEnum.PEER_LOG_FILE_EXTENSION.getValue();
 	}
 
-	static {
-		setStateFromConfigFiles();
+	public static void setPeerMapFromProperties() {
 		int networkId = 1;
 		Scanner sc = null;
 		try {
@@ -175,8 +174,8 @@ public class BitTorrentState {
 			FileInputStream in = new FileInputStream(PropertiesEnum.COMMON_PROPERTIES_CONFIG_PATH.getValue());
 			properties.load(in);
 		}
-		catch (Exception ex) {
-			System.out.println("File not found : " + ex.getMessage());
+		catch (IOException ex) {
+			throw new RuntimeException("File not found : " + ex.getMessage());
 		}
 
 		fileName = properties.get(PropertiesEnum.FILENAME.getValue()).toString();
@@ -185,13 +184,15 @@ public class BitTorrentState {
 				Integer.parseInt(properties.get(PropertiesEnum.NUMBER_OF_PREFERRED_NEIGHBORS.getValue()).toString());
 		optimisticUnchokingInterval =
 				Integer.parseInt(properties.get(PropertiesEnum.OPTIMISTIC_UNCHOKING_INTERVAL.getValue()).toString());
-		chunkSize = Integer.parseInt(properties.getProperty(PropertiesEnum.PIECESIZE.getValue()).toString());
+		chunkSize = Integer.parseInt(properties.getProperty(PropertiesEnum.PIECESIZE.getValue()));
 		unchokingInterval =
-				Integer.parseInt(properties.getProperty(PropertiesEnum.UNCHOKING_INTERVAL.getValue()).toString());
+				Integer.parseInt(properties.getProperty(PropertiesEnum.UNCHOKING_INTERVAL.getValue()));
 		calculateAndSetNumberOfPieces();
 
 		System.out.println(PropertiesEnum.PROPERTIES_FILE_PATH.getValue());
 		System.out.println(PropertiesEnum.PROPERTIES_FILE_PATH.getValue() + BitTorrentState.fileName);
+
+		setPeerMapFromProperties();
 
 	}
 

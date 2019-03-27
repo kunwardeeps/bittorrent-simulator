@@ -8,19 +8,11 @@ import java.io.IOException;
 public class PeerProcessExecutor {
 	public static String peerId;
 
-	public static void main(String args[]) {
-		if (args.length > 0) {
-			peerId = args[0];
-		}
-		else {
-			//default value
-			peerId = "1001";
-		}
-		init();
-
+	public PeerProcessExecutor(String peerId) {
+		this.peerId = peerId;
 	}
 
-	private static void init() {
+	public void init() {
 		BitTorrentState.setStateFromConfigFiles();
 		if (BitTorrentState.getPeer(peerId).isHasSharedFile()) {
 			System.out.println("Shared file found with :"+ peerId);

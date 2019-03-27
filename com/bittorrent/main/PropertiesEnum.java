@@ -4,7 +4,7 @@ import java.io.File;
 
 public enum PropertiesEnum {
 
-	NUMBER_OF_PREFERRED_NEIGHBORS("s"),
+	NUMBER_OF_PREFERRED_NEIGHBORS("NumberOfPreferredNeighbors"),
 	UNCHOKING_INTERVAL("UnchokingInterval"),
 	OPTIMISTIC_UNCHOKING_INTERVAL("OptimisticUnchokingInterval"),
 	FILENAME("FileName"),
