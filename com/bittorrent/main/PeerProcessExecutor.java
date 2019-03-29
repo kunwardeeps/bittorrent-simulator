@@ -19,7 +19,7 @@ public class PeerProcessExecutor {
 		}
 		System.out.println("Peer ID :"+ peerId);
 		BitTorrentState.showConfiguration();
-		Node current = Node.getInstance();
+		Peer currentPeer = Peer.getInstance();
 		// TODO Start execution
 	}
 

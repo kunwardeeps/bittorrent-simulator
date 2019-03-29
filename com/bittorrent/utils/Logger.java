@@ -2,7 +2,7 @@ package com.bittorrent.utils;
 
 import com.bittorrent.dtos.BitTorrentState;
 import com.bittorrent.dtos.ConnectionDTO;
-import com.bittorrent.main.Node;
+import com.bittorrent.main.Peer;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -22,7 +22,7 @@ public class Logger {
 
 	public static PrintWriter printWriter = null;
 
-	public static Logger getObj() {
+	public static Logger getLogger() {
 		synchronized (Logger.class) {
 			if (obj == null) {
 				obj = new Logger();
@@ -38,7 +38,7 @@ public class Logger {
 	private Logger() {
 		try {
 			System.out.println("Logger instantiated for peer: "
-					+ Node.getInstance().getPeerDTO().getPeerId());
+					+ Peer.getInstance().getPeerState().getPeerId());
 			File file = makeLogDirectoryForPeer();
 			initPrintWriter(file);
 		}
@@ -49,7 +49,7 @@ public class Logger {
 
 	private File makeLogDirectoryForPeer() throws Exception{
 
-		String path = BitTorrentState.getPeerLogFilePath() + Node.getInstance().getPeerDTO().getPeerId()
+		String path = BitTorrentState.getPeerLogFilePath() + Peer.getInstance().getPeerState().getPeerId()
 				+ BitTorrentState.getPeerLogFileExtension();
 
 		File file = new File(path);

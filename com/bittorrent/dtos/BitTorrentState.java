@@ -17,13 +17,13 @@ public class BitTorrentState {
 	public static long fileSize;
 	public static int chunkSize;
 
-	private static Map<String, PeerDTO> peers = new HashMap<>();
+	private static Map<String, PeerState> peers = new HashMap<>();
 
-	public static PeerDTO getPeer(String id) {
+	public static PeerState getPeer(String id) {
 		return peers.get(id);
 	}
 
-	public static Map<String, PeerDTO> getPeers() {
+	public static Map<String, PeerState> getPeers() {
 		return peers;
 	}
 
@@ -87,7 +87,7 @@ public class BitTorrentState {
 		BitTorrentState.chunkSize = chunkSize;
 	}
 
-	public static void setPeers(Map<String, PeerDTO> peers) {
+	public static void setPeers(Map<String, PeerState> peers) {
 		BitTorrentState.peers = peers;
 	}
 
@@ -116,7 +116,7 @@ public class BitTorrentState {
 			sc = new Scanner(new File(PropertiesEnum.PEER_PROPERTIES_CONFIG_PATH.getValue()));
 			while (sc.hasNextLine()) {
 				String arr[] = sc.nextLine().split(" ");
-				PeerDTO peer = new PeerDTO();
+				PeerState peer = new PeerState();
 				peer.setNetworkId(networkId++);
 				peer.setPeerId(arr[0]);
 				peer.setHostName(arr[1]);

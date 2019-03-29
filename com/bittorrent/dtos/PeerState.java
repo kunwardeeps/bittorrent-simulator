@@ -1,12 +1,13 @@
 package com.bittorrent.dtos;
 
-public class PeerDTO {
+public class PeerState {
 
 	private int networkId;
 	private String peerId;
 	private String hostName;
 	private int port;
 	private boolean hasSharedFile;
+	private boolean fileReceived = false;
 
 	public int getNetworkId() {
 		return networkId;
@@ -48,7 +49,15 @@ public class PeerDTO {
 		this.hasSharedFile = hasSharedFile;
 	}
 
-	public PeerDTO(int networkId, String peerId, String hostName, int port, boolean hasSharedFile) {
+	public boolean isFileReceived() {
+		return fileReceived;
+	}
+
+	public void setFileReceived(boolean fileReceived) {
+		this.fileReceived = fileReceived;
+	}
+
+	public PeerState(int networkId, String peerId, String hostName, int port, boolean hasSharedFile) {
 		this.networkId = networkId;
 		this.peerId = peerId;
 		this.hostName = hostName;
@@ -56,7 +65,7 @@ public class PeerDTO {
 		this.hasSharedFile = hasSharedFile;
 	}
 
-	public PeerDTO(){}
+	public PeerState(){}
 
 	@Override
 	public String toString() {
@@ -66,6 +75,7 @@ public class PeerDTO {
 				", hostName='" + hostName + '\'' +
 				", port=" + port +
 				", hasSharedFile=" + hasSharedFile +
+				", fileReceived=" + fileReceived +
 				'}';
 	}
 }
