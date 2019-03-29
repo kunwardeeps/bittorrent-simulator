@@ -1,5 +1,7 @@
 package com.bittorrent.dtos;
 
+import java.util.concurrent.ConcurrentHashMap;
+
 public class PeerState {
 
 	private int networkId;
@@ -8,6 +10,19 @@ public class PeerState {
 	private int port;
 	private boolean hasSharedFile;
 	private boolean fileReceived = false;
+	private ConcurrentHashMap<String, Piece> bitField = new ConcurrentHashMap<>();
+
+	public boolean hasPiece(String id) {
+		return bitField.contains(id);
+	}
+
+	public Piece getPiece(String id) {
+		return bitField.get(id);
+	}
+
+	public Piece setPiece(Piece piece) {
+		return bitField.put(piece.id, piece);
+	}
 
 	public int getNetworkId() {
 		return networkId;

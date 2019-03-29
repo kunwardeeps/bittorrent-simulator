@@ -15,13 +15,4 @@ public class BitField {
 		//TODO
 	}
 
-	public static BitField getObject() {
-		synchronized (BitField.class) {
-			if (bf == null) {
-				bf = new BitField();
-			}
-		}
-		return bf;
-	}
-
 }
