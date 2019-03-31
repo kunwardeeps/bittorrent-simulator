@@ -1,26 +1,62 @@
 package com.bittorrent.main;
 
 import com.bittorrent.dtos.BitTorrentState;
+import com.bittorrent.dtos.PeerState;
 import com.bittorrent.utils.Logger;
 
 import java.io.IOException;
+import java.net.Socket;
+import java.util.Map;
 
-public class PeerProcessExecutor {
-	public static String peerId;
+public class PeerProcessExecutor implements Runnable{
+	private PeerState peerState;
 
 	public PeerProcessExecutor(String peerId) {
-		this.peerId = peerId;
+		BitTorrentState.setStateFromConfigFiles();
+		this.peerState = BitTorrentState.getPeerState(peerId);
 	}
 
 	public void init() {
-		BitTorrentState.setStateFromConfigFiles();
-		if (BitTorrentState.getPeer(peerId).isHasSharedFile()) {
-			System.out.println("Shared file found with :"+ peerId);
+		if (peerState.isHasSharedFile()) {
+			System.out.println("Shared file found with :"+ peerState.getPeerId());
 		}
-		System.out.println("Peer ID :"+ peerId);
+		System.out.println("Peer ID :"+ peerState.getPeerId());
 		BitTorrentState.showConfiguration();
-		Peer currentPeer = Peer.getInstance();
-		// TODO Start execution
+		System.out.println(peerState);
+
+		// accept incoming connections
+		Thread t = new Thread(new IncomingConnectionHandler(peerState));
+		t.start();
+
+		// create outgoing connections
+		createOutgoingConnections();
 	}
+
+	public void run() {
+		init();
+	}
+
+	public void createOutgoingConnections() {
+
+		Map<String, PeerState> peers = BitTorrentState.getPeers();
+
+		int currentSeqId = this.peerState.getSequenceId();
+
+		for (PeerState peerState : peers.values()) {
+
+			if (currentSeqId > peerState.getSequenceId()) {
+
+				try {
+					Socket clientSocket = new Socket(peerState.getHostName(), peerState.getPort());
+					Thread t = new Thread(new PeerConnectionHandler(clientSocket, peerState));
+					t.start();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+
+			}
+		}
+	}
+
 
 }

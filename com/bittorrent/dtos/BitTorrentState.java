@@ -19,7 +19,7 @@ public class BitTorrentState {
 
 	private static Map<String, PeerState> peers = new HashMap<>();
 
-	public static PeerState getPeer(String id) {
+	public static PeerState getPeerState(String id) {
 		return peers.get(id);
 	}
 
@@ -110,14 +110,14 @@ public class BitTorrentState {
 	}
 
 	public static void setPeerMapFromProperties() {
-		int networkId = 1;
 		Scanner sc = null;
+		int seq = 1;
 		try {
 			sc = new Scanner(new File(PropertiesEnum.PEER_PROPERTIES_CONFIG_PATH.getValue()));
 			while (sc.hasNextLine()) {
 				String arr[] = sc.nextLine().split(" ");
 				PeerState peer = new PeerState();
-				peer.setNetworkId(networkId++);
+				peer.setSequenceId(seq++);
 				peer.setPeerId(arr[0]);
 				peer.setHostName(arr[1]);
 				peer.setPort(Integer.parseInt(arr[2]));

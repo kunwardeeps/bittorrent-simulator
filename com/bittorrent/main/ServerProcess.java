@@ -6,15 +6,15 @@ import java.net.Socket;
 import java.nio.ByteBuffer;
 
 /**
- * Utility Class for sending TCP requests to peers
+ * Thread that runs a peer as a client for accepting requests
  */
-public class Client implements Runnable {
+public class ServerProcess implements Runnable {
+
 	private DataInputStream inputStream;
 	private boolean downloadActive;
 	private Socket currentSocket;
 
-
-	public Client(Socket socket) {
+	public ServerProcess(Socket socket) {
 		this.currentSocket = socket;
 		downloadActive = true;
 		// Data Input Stream
@@ -34,11 +34,11 @@ public class Client implements Runnable {
 
 	public void receiveMessage() {
 
-		while (DownloadActive()) {
+		while (downloadActive) {
 			// Receive Message
 			int messageLength = Integer.MIN_VALUE;
 			messageLength = rcvMessageLength();
-			if (!DownloadActive()) {
+			if (!downloadActive) {
 				continue;
 			}
 			byte[] message = new byte[messageLength];
@@ -47,18 +47,6 @@ public class Client implements Runnable {
 		}
 
 	}
-	
-	private synchronized boolean DownloadActive() {
-
-		return downloadActive;
-	}
-	
-	public void close()
-	{
-		boolean terminate = terminateClient();
-	}
-
-	
 
 	private int rcvMessageLength() {
 		int lengthofResponse = Integer.MIN_VALUE;
@@ -95,7 +83,7 @@ public class Client implements Runnable {
 		}
 	}
 
-	public boolean terminateClient(){
+	public boolean terminate(){
 		try{
 			if(currentSocket!=null){
 				synchronized (this){
@@ -105,7 +93,7 @@ public class Client implements Runnable {
 			}
 		}
 		catch (Exception ex){
-			System.out.println(" Client not terminated properly");
+			System.out.println(" ClientProcess not terminated properly");
 			return false;
 		}
 		return false;

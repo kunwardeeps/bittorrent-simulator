@@ -1,33 +1,33 @@
 package com.bittorrent.dtos;
 
-import com.bittorrent.main.Client;
-import com.bittorrent.main.MainServer;
+import com.bittorrent.main.ClientProcess;
+import com.bittorrent.main.ServerProcess;
 
 import java.net.Socket;
 
 public class ConnectionDTO {
 
-	private MainServer server;
-	private Client client;
+	private ServerProcess serverProcess;
+	private ClientProcess clientProcess;
 	private double bytesTransferred;
 	private Socket peerSocket;
 	private String remotePeerId;
 	private boolean isConnectionChoked;
 
-    public MainServer getServer() {
-        return server;
+    public ServerProcess getServerProcess() {
+        return serverProcess;
     }
 
-    public void setServer(MainServer server) {
-        this.server = server;
+    public void setServerProcess(ServerProcess serverProcess) {
+        this.serverProcess = serverProcess;
     }
 
-    public Client getClient() {
-        return client;
+    public ClientProcess getClientProcess() {
+        return clientProcess;
     }
 
-    public void setClient(Client client) {
-        this.client = client;
+    public void setClientProcess(ClientProcess clientProcess) {
+        this.clientProcess = clientProcess;
     }
 
     public double getBytesTransferred() {
@@ -62,10 +62,10 @@ public class ConnectionDTO {
         isConnectionChoked = connectionChoked;
     }
 
-    public ConnectionDTO(MainServer server, Client client, double bytesTransferred,
+    public ConnectionDTO(ServerProcess serverProcess, ClientProcess clientProcess, double bytesTransferred,
                          Socket peerSocket, String remotePeerId, boolean isConnectionChoked) {
-        this.server = server;
-        this.client = client;
+        this.serverProcess = serverProcess;
+        this.clientProcess = clientProcess;
         this.bytesTransferred = bytesTransferred;
         this.peerSocket = peerSocket;
         this.remotePeerId = remotePeerId;
@@ -75,8 +75,8 @@ public class ConnectionDTO {
     @Override
     public String toString() {
         return "ConnectionDTO{" +
-                "server=" + server +
-                ", client=" + client +
+                "serverProcess=" + serverProcess +
+                ", clientProcess=" + clientProcess +
                 ", bytesTransferred=" + bytesTransferred +
                 ", peerSocket=" + peerSocket +
                 ", remotePeerId='" + remotePeerId + '\'' +

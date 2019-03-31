@@ -4,7 +4,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class PeerState {
 
-	private int networkId;
+	private int sequenceId;
 	private String peerId;
 	private String hostName;
 	private int port;
@@ -24,10 +24,6 @@ public class PeerState {
 		return bitField.put(piece.id, piece);
 	}
 
-	public int getNetworkId() {
-		return networkId;
-	}
-
 	public String getPeerId() {
 		return peerId;
 	}
@@ -42,10 +38,6 @@ public class PeerState {
 
 	public boolean isHasSharedFile() {
 		return hasSharedFile;
-	}
-
-	public void setNetworkId(int networkId) {
-		this.networkId = networkId;
 	}
 
 	public void setPeerId(String peerId) {
@@ -72,8 +64,15 @@ public class PeerState {
 		this.fileReceived = fileReceived;
 	}
 
-	public PeerState(int networkId, String peerId, String hostName, int port, boolean hasSharedFile) {
-		this.networkId = networkId;
+	public int getSequenceId() {
+		return sequenceId;
+	}
+
+	public void setSequenceId(int sequenceId) {
+		this.sequenceId = sequenceId;
+	}
+
+	public PeerState(String peerId, String hostName, int port, boolean hasSharedFile) {
 		this.peerId = peerId;
 		this.hostName = hostName;
 		this.port = port;
@@ -84,13 +83,14 @@ public class PeerState {
 
 	@Override
 	public String toString() {
-		return "PeerDTO{" +
-				"networkId=" + networkId +
+		return "PeerState{" +
+				"sequenceId=" + sequenceId +
 				", peerId='" + peerId + '\'' +
 				", hostName='" + hostName + '\'' +
 				", port=" + port +
 				", hasSharedFile=" + hasSharedFile +
 				", fileReceived=" + fileReceived +
+				", bitField=" + bitField +
 				'}';
 	}
 }
