@@ -83,7 +83,7 @@ public class Logger {
 		writeFile(getTimeStamp()
 				+ ": Peer "
 				+ toId
-				+ " received the 'have' message from "
+				+ " received the 'have' messaging from "
 				+ fromId
 				+ " for the piece "
 				+ pieceIndex + ".");
@@ -166,7 +166,7 @@ public class Logger {
 		writeFile(getTimeStamp()
 				+ ":Peer "
 				+ to
-				+ " received the 'interested' message from "
+				+ " received the 'interested' messaging from "
 				+ from
 				+ ".");
 	}
@@ -177,7 +177,7 @@ public class Logger {
 		writeFile(getTimeStamp()
 				+ "Peer "
 				+ to
-				+ " received the 'not interested' message from "
+				+ " received the 'not interested' messaging from "
 				+ from
 				+ ".");
 	}

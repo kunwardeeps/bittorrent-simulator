@@ -21,8 +21,8 @@ public class IncomingConnectionHandler implements Runnable{
             {
                 System.out.println("Peer Id " + peerState.getPeerId() + " accepting connections");
                 clientSocket = serverSocket.accept();
-                Thread t = new Thread(new PeerConnectionHandler(clientSocket, peerState));
                 System.out.println("Connection is established");
+                Thread t = new Thread(new PeerConnectionHandler(clientSocket, peerState));
                 t.start();
             }
             catch(Exception e)

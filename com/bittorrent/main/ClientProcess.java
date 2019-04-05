@@ -37,7 +37,7 @@ public class ClientProcess implements Runnable {
 	public void run() {
 		try {
 			while (isConnectionActive) {
-				sendMessageData("Test message".getBytes());
+				sendMessageData("Test messaging".getBytes());
 				System.out.println("Client Process running");
 			}
 		}

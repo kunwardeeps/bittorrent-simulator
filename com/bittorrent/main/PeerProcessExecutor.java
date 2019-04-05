@@ -42,12 +42,12 @@ public class PeerProcessExecutor implements Runnable{
 
 		int currentSeqId = this.peerState.getSequenceId();
 
-		for (PeerState peerState : peers.values()) {
+		for (PeerState existingPeer : peers.values()) {
 
-			if (currentSeqId > peerState.getSequenceId()) {
+			if (currentSeqId > existingPeer.getSequenceId()) {
 
 				try {
-					Socket clientSocket = new Socket(peerState.getHostName(), peerState.getPort());
+					Socket clientSocket = new Socket(existingPeer.getHostName(), existingPeer.getPort());
 					Thread t = new Thread(new PeerConnectionHandler(clientSocket, peerState));
 					t.start();
 				} catch (Exception e) {
