@@ -19,11 +19,23 @@ public class PeerState {
 	private boolean fileReceived = false;
 	private BitSet bitField;
 	private ConcurrentHashMap<Integer, byte[]> fileSplitMap;
-	private ConcurrentHashMap<String, BitSet> peerBitFields = new ConcurrentHashMap<>();
 	private ConcurrentHashMap<String, String> preferredNeighbours = new ConcurrentHashMap<>();
 	private ConcurrentHashMap<String, String> chokedNeighbours = new ConcurrentHashMap<>();
 	private ConcurrentHashMap<String, String> interestedNeighbours = new ConcurrentHashMap<>();
 	private BlockingQueue<Message> queue = new LinkedBlockingQueue<>();
+	private double dataRate = 0;
+
+	public void setInterestedNeighbours(ConcurrentHashMap<String, String> interestedNeighbours) {
+		this.interestedNeighbours = interestedNeighbours;
+	}
+
+	public double getDataRate() {
+		return dataRate;
+	}
+
+	public void setDataRate(double dataRate) {
+		this.dataRate = dataRate;
+	}
 
 	public BlockingQueue<Message> getQueue(){
 		return queue;
@@ -54,10 +66,6 @@ public class PeerState {
 		preferredNeighbours.put(peerId, peerId);
 	}
 
-	public void putPeerBitField(String peerId, BitSet bitSet) {
-		peerBitFields.put(peerId, bitSet);
-	}
-
 	public void setBitField(BitSet bitField) {
 		this.bitField = bitField;
 	}
@@ -68,14 +76,6 @@ public class PeerState {
 
 	public void setFileSplitMap(ConcurrentHashMap<Integer, byte[]> fileSplitMap) {
 		this.fileSplitMap = fileSplitMap;
-	}
-
-	public ConcurrentHashMap<String, BitSet> getPeerBitFields() {
-		return peerBitFields;
-	}
-
-	public void setPeerBitFields(ConcurrentHashMap<String, BitSet> peerBitFields) {
-		this.peerBitFields = peerBitFields;
 	}
 
 	public ConcurrentHashMap<String, String> getPreferredNeighbours() {

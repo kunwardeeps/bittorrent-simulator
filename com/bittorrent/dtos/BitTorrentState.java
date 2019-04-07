@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class BitTorrentState {
 
@@ -17,7 +18,7 @@ public class BitTorrentState {
 	public static long fileSize;
 	public static int pieceSize;
 
-	private static Map<String, PeerState> peers = new HashMap<>();
+	private static ConcurrentHashMap<String, PeerState> peers = new ConcurrentHashMap<>();
 
 	public static PeerState getPeerState(String id) {
 		return peers.get(id);
@@ -85,10 +86,6 @@ public class BitTorrentState {
 
 	public static void setPieceSize(int pieceSize) {
 		BitTorrentState.pieceSize = pieceSize;
-	}
-
-	public static void setPeers(Map<String, PeerState> peers) {
-		BitTorrentState.peers = peers;
 	}
 
 	public static void calculateAndSetNumberOfPieces() {

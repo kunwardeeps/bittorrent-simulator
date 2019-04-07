@@ -10,6 +10,7 @@ import java.net.Socket;
 import java.util.BitSet;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Timer;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListSet;
 
@@ -42,6 +43,11 @@ public class PeerProcessExecutor implements Runnable{
 
 		// create outgoing connections
 		createOutgoingConnections();
+
+		// Periodically select preferred neighbors for this peer
+		Timer timer = new Timer();
+		PreferredNeighborsScheduler preferredNeighborsScheduler = new PreferredNeighborsScheduler(peerState.getPeerId());
+		timer.scheduleAtFixedRate(preferredNeighborsScheduler, 500, BitTorrentState.getUnchokingInterval() * 1000);
 	}
 
 	public void run() {

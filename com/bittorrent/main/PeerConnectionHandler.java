@@ -18,6 +18,8 @@ public class PeerConnectionHandler implements Runnable{
     private ObjectOutputStream os;
     private Logger logger;
     private String remotePeerId;
+    private long startTime;
+    private long stopTime;
 
     public PeerConnectionHandler(Socket peerSocket, PeerState peerState) {
         this.peerSocket = peerSocket;
@@ -35,7 +37,7 @@ public class PeerConnectionHandler implements Runnable{
         {
             os = new ObjectOutputStream(peerSocket.getOutputStream());
 
-            Thread asyncMessageSender = new Thread(new AsyncMessageSender(this.peerState, this));
+            Thread asyncMessageSender = new Thread(new AsyncMessageSender(this.peerState.getPeerId(), this));
             asyncMessageSender.start();
 
             sendMessage(new HandshakeMessage(this.peerState.getPeerId()));
@@ -72,6 +74,14 @@ public class PeerConnectionHandler implements Runnable{
                         break;
                     }
                     case HAVE: {
+                        processHave(receivedMsg);
+                        break;
+                    }
+                    case CHOKE: {
+                        break;
+                    }
+                    case UNCHOKE: {
+                        processUnchoke();
                         break;
                     }
                     default:
@@ -86,10 +96,36 @@ public class PeerConnectionHandler implements Runnable{
         }
     }
 
+    private void processUnchoke() {
+
+        int interestingPieceIndex = getNextInterestingPieceIndex(BitTorrentState.getPeers().get(remotePeerId).getBitField(), this.peerState.getBitField());
+
+        if (interestingPieceIndex != -1) {
+            RequestMessage requestMessage = new RequestMessage(interestingPieceIndex);
+            sendMessage(requestMessage);
+        }
+    }
+
+    private void processHave(Message receivedMsg) {
+        HaveMessage haveMessage = (HaveMessage) receivedMsg;
+        int index = (int) haveMessage.getPayload();
+
+        // set peer bitset info
+        BitTorrentState.getPeers().get(remotePeerId).getBitField().set(index);
+
+        if (!this.peerState.getBitField().get(index)) {
+            System.out.println(this.peerState.getPeerId() + "Sending interested message for piece" + index);
+            sendMessage(new InterestedMessage());
+        }
+    }
+
     private void processPiece(Message receivedMsg) {
+        stopTime = System.currentTimeMillis();
         PieceMessage pieceMessage = (PieceMessage) receivedMsg;
         System.out.println("Received piece index: " + pieceMessage.getIndex());
         byte[] piece = (byte[]) pieceMessage.getPayload();
+        setDataRate(piece.length);
+
         if (piece.length != 0) {
             this.peerState.putFileSplitMap(pieceMessage.getIndex(), piece);
             broadcastMessage(new HaveMessage(pieceMessage.getIndex()));
@@ -97,7 +133,7 @@ public class PeerConnectionHandler implements Runnable{
         else {
             System.out.println("Error: piece length is 0!");
         }
-        int index = getNextInterestingPieceIndex(this.peerState.getPeerBitFields().get(remotePeerId),
+        int index = getNextInterestingPieceIndex(BitTorrentState.getPeers().get(remotePeerId).getBitField(),
                 this.peerState.getBitField());
         if (index == -1) {
             NotInterestedMessage notInterestedMessage = new NotInterestedMessage();
@@ -106,13 +142,15 @@ public class PeerConnectionHandler implements Runnable{
         }
         else {
             System.out.println("Requesting piece Index " + index);
+            startTime = System.currentTimeMillis();
             RequestMessage requestMessage = new RequestMessage(index);
             sendMessage(requestMessage);
         }
-//        }
-//        else {
-//            System.out.println(remotePeerId + " no longer a preferred neighbour for " + peerState.getPeerId());
-//        }
+    }
+
+    private void setDataRate(int size) {
+        double dataRate = size / stopTime - startTime;
+        BitTorrentState.getPeers().get(remotePeerId).setDataRate(dataRate);
     }
 
     private void processRequest(Message receivedMsg) {
@@ -124,7 +162,7 @@ public class PeerConnectionHandler implements Runnable{
                 sendMessage(pieceMessage);
             }
             else {
-                System.out.println("Discarding request message as piece does not exist!");
+                System.out.println("Error: Discarding request message as piece does not exist!");
             }
         }
         else {
@@ -147,7 +185,7 @@ public class PeerConnectionHandler implements Runnable{
     private void processBitField(Message message){
         BitFieldMessage bitFieldMessage = (BitFieldMessage) message;
 
-        this.peerState.putPeerBitField(remotePeerId, bitFieldMessage.getPayload());
+        BitTorrentState.getPeers().get(remotePeerId).setBitField(bitFieldMessage.getPayload());
 
         int interestingPieceIndex = getNextInterestingPieceIndex(bitFieldMessage.getPayload(), this.peerState.getBitField());
 
@@ -159,6 +197,7 @@ public class PeerConnectionHandler implements Runnable{
             InterestedMessage interestedMessage = new InterestedMessage();
             sendMessage(interestedMessage);
             RequestMessage requestMessage = new RequestMessage(interestingPieceIndex);
+            startTime = System.currentTimeMillis();
             sendMessage(requestMessage);
         }
 
