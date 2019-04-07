@@ -15,6 +15,10 @@ public class HandshakeMessage extends Message {
         return this.header + this.ZERO_BITS + this.peerId;
     }
 
+    public String getPeerId(){
+        return peerId;
+    }
+
     public boolean validate(String peerId) {
         return header == "P2PFILESHARINGPROJ" && peerId == this.peerId;
     }

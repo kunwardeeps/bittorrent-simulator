@@ -2,6 +2,7 @@ package com.bittorrent.utils;
 
 import com.bittorrent.dtos.BitTorrentState;
 import com.bittorrent.dtos.ConnectionDTO;
+import com.bittorrent.dtos.PeerState;
 import com.bittorrent.main.Peer;
 
 import java.io.File;
@@ -9,8 +10,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Timestamp;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 /***
  * Logger utility class designed as Singleton to
@@ -18,28 +21,28 @@ import java.util.List;
  */
 public class Logger {
 
-	private static Logger obj;
+	private static Map<String, Logger> map = new HashMap<>();
 
-	public static PrintWriter printWriter = null;
+	public PrintWriter printWriter = null;
 
-	public static Logger getLogger() {
+	public static Logger getLogger(String peerId) {
 		synchronized (Logger.class) {
-			if (obj == null) {
-				obj = new Logger();
+			if (map.get(peerId) == null) {
+				map.put(peerId, new Logger(peerId));
 			}
 		}
-		return obj;
+		return map.get(peerId);
 	}
 
 	/**
 	 * Constructor: Creates directories for logging
 	 * and initializes PrintWriter
 	 */
-	private Logger() {
+	private Logger(String peerId) {
 		try {
 			System.out.println("Logger instantiated for peer: "
-					+ Peer.getInstance().getPeerState().getPeerId());
-			File file = makeLogDirectoryForPeer();
+					+ peerId);
+			File file = makeLogDirectoryForPeer(peerId);
 			initPrintWriter(file);
 		}
 		catch (Exception ex) {
@@ -47,9 +50,9 @@ public class Logger {
 		}
 	}
 
-	private File makeLogDirectoryForPeer() throws Exception{
+	private File makeLogDirectoryForPeer(String peerId) throws Exception{
 
-		String path = BitTorrentState.getPeerLogFilePath() + Peer.getInstance().getPeerState().getPeerId()
+		String path = BitTorrentState.getPeerLogFilePath() + peerId
 				+ BitTorrentState.getPeerLogFileExtension();
 
 		File file = new File(path);
@@ -103,9 +106,9 @@ public class Logger {
 	public void logTcpConnectionFrom(String fromId, String toId) {
 		writeFile(getTimeStamp()
 				+ ": Peer "
-				+ fromId
-				+ " is connected from Peer "
 				+ toId
+				+ " is connected from Peer "
+				+ fromId
 				+ ".");
 	}
 

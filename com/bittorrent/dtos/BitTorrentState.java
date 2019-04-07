@@ -9,13 +9,13 @@ import java.util.*;
 
 public class BitTorrentState {
 
-	public static int numberOfChunks;
+	public static int numberOfPieces;
 	public static int numberOfPreferredNeighbors;
 	public static int unchokingInterval;
 	public static int optimisticUnchokingInterval;
 	public static String fileName;
 	public static long fileSize;
-	public static int chunkSize;
+	public static int pieceSize;
 
 	private static Map<String, PeerState> peers = new HashMap<>();
 
@@ -31,12 +31,12 @@ public class BitTorrentState {
 		return peers.size();
 	}
 
-	public static int getNumberOfChunks() {
-		return numberOfChunks;
+	public static int getNumberOfPieces() {
+		return numberOfPieces;
 	}
 
-	public static void setNumberOfChunks(int numberOfChunks) {
-		BitTorrentState.numberOfChunks = numberOfChunks;
+	public static void setNumberOfPieces(int numberOfPieces) {
+		BitTorrentState.numberOfPieces = numberOfPieces;
 	}
 
 	public static int getNumberOfPreferredNeighbors() {
@@ -79,12 +79,12 @@ public class BitTorrentState {
 		BitTorrentState.fileSize = fileSize;
 	}
 
-	public static int getChunkSize() {
-		return chunkSize;
+	public static int getPieceSize() {
+		return pieceSize;
 	}
 
-	public static void setChunkSize(int chunkSize) {
-		BitTorrentState.chunkSize = chunkSize;
+	public static void setPieceSize(int pieceSize) {
+		BitTorrentState.pieceSize = pieceSize;
 	}
 
 	public static void setPeers(Map<String, PeerState> peers) {
@@ -92,13 +92,13 @@ public class BitTorrentState {
 	}
 
 	public static void calculateAndSetNumberOfPieces() {
-		if ((int) (fileSize % chunkSize) == 0) {
-			numberOfChunks = (int) (fileSize / chunkSize) + 1;
+		if ((int) (fileSize % pieceSize) == 0) {
+			numberOfPieces = (int) (fileSize / pieceSize) + 1;
 		}
 		else {
-			numberOfChunks = (int) (fileSize / chunkSize);
+			numberOfPieces = (int) (fileSize / pieceSize);
 		}
-		System.out.println("BitTorrent current state - Number of pieces: " + numberOfChunks);
+		System.out.println("BitTorrent current state - Number of pieces: " + numberOfPieces);
 	}
 
 	public static String getPeerLogFilePath() {
@@ -163,7 +163,7 @@ public class BitTorrentState {
 				+ ", fileSize="
 				+ fileSize
 				+ ", pieceSize="
-				+ chunkSize
+				+ pieceSize
 				+ "]");
 	}
 
@@ -184,7 +184,7 @@ public class BitTorrentState {
 				Integer.parseInt(properties.get(PropertiesEnum.NUMBER_OF_PREFERRED_NEIGHBORS.getValue()).toString());
 		optimisticUnchokingInterval =
 				Integer.parseInt(properties.get(PropertiesEnum.OPTIMISTIC_UNCHOKING_INTERVAL.getValue()).toString());
-		chunkSize = Integer.parseInt(properties.getProperty(PropertiesEnum.PIECESIZE.getValue()));
+		pieceSize = Integer.parseInt(properties.getProperty(PropertiesEnum.PIECESIZE.getValue()));
 		unchokingInterval =
 				Integer.parseInt(properties.getProperty(PropertiesEnum.UNCHOKING_INTERVAL.getValue()));
 		calculateAndSetNumberOfPieces();

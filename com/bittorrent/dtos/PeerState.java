@@ -1,6 +1,13 @@
 package com.bittorrent.dtos;
 
+import com.bittorrent.messaging.Message;
+
+import java.util.BitSet;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.LinkedBlockingQueue;
 
 public class PeerState {
 
@@ -10,18 +17,85 @@ public class PeerState {
 	private int port;
 	private boolean hasSharedFile;
 	private boolean fileReceived = false;
-	private ConcurrentHashMap<String, Piece> bitField = new ConcurrentHashMap<>();
+	private BitSet bitField;
+	private ConcurrentHashMap<Integer, byte[]> fileSplitMap;
+	private ConcurrentHashMap<String, BitSet> peerBitFields = new ConcurrentHashMap<>();
+	private ConcurrentHashMap<String, String> preferredNeighbours = new ConcurrentHashMap<>();
+	private ConcurrentHashMap<String, String> chokedNeighbours = new ConcurrentHashMap<>();
+	private ConcurrentHashMap<String, String> interestedNeighbours = new ConcurrentHashMap<>();
+	private BlockingQueue<Message> queue = new LinkedBlockingQueue<>();
 
-	public boolean hasPiece(String id) {
-		return bitField.contains(id);
+	public BlockingQueue<Message> getQueue(){
+		return queue;
 	}
 
-	public Piece getPiece(String id) {
-		return bitField.get(id);
+	public synchronized void putFileSplitMap(int index, byte[] piece) {
+		this.fileSplitMap.put(index, piece);
+		this.bitField.set(index);
 	}
 
-	public Piece setPiece(Piece piece) {
-		return bitField.put(piece.id, piece);
+	public ConcurrentHashMap<String, String> getInterestedNeighbours() {
+		return interestedNeighbours;
+	}
+
+	public int preferredNeighboursCount(){
+		return preferredNeighbours.size();
+	}
+
+	public void removeInterestedNeighbours(String peerId) {
+		interestedNeighbours.remove(peerId);
+	}
+
+	public void putInterestedNeighbours(String peerId) {
+		interestedNeighbours.put(peerId, peerId);
+	}
+
+	public void putPreferredNeighbours(String peerId) {
+		preferredNeighbours.put(peerId, peerId);
+	}
+
+	public void putPeerBitField(String peerId, BitSet bitSet) {
+		peerBitFields.put(peerId, bitSet);
+	}
+
+	public void setBitField(BitSet bitField) {
+		this.bitField = bitField;
+	}
+
+	public ConcurrentHashMap<Integer, byte[]> getFileSplitMap() {
+		return fileSplitMap;
+	}
+
+	public void setFileSplitMap(ConcurrentHashMap<Integer, byte[]> fileSplitMap) {
+		this.fileSplitMap = fileSplitMap;
+	}
+
+	public ConcurrentHashMap<String, BitSet> getPeerBitFields() {
+		return peerBitFields;
+	}
+
+	public void setPeerBitFields(ConcurrentHashMap<String, BitSet> peerBitFields) {
+		this.peerBitFields = peerBitFields;
+	}
+
+	public ConcurrentHashMap<String, String> getPreferredNeighbours() {
+		return preferredNeighbours;
+	}
+
+	public void setPreferredNeighbours(ConcurrentHashMap<String, String> preferredNeighbours) {
+		this.preferredNeighbours = preferredNeighbours;
+	}
+
+	public ConcurrentHashMap<String, String> getChokedNeighbours() {
+		return chokedNeighbours;
+	}
+
+	public void setChokedNeighbours(ConcurrentHashMap<String, String> chokedNeighbours) {
+		this.chokedNeighbours = chokedNeighbours;
+	}
+
+	public BitSet getBitField() {
+		return bitField;
 	}
 
 	public String getPeerId() {
@@ -53,6 +127,13 @@ public class PeerState {
 	}
 
 	public void setHasSharedFile(boolean hasSharedFile) {
+		if (hasSharedFile) {
+			if (this.bitField == null) {
+				this.bitField = new BitSet(BitTorrentState.getNumberOfPieces());
+			}
+			this.bitField.set(0, BitTorrentState.getNumberOfPieces() - 1);
+		}
+
 		this.hasSharedFile = hasSharedFile;
 	}
 
@@ -79,7 +160,9 @@ public class PeerState {
 		this.hasSharedFile = hasSharedFile;
 	}
 
-	public PeerState(){}
+	public PeerState(){
+		this.bitField = new BitSet(BitTorrentState.getNumberOfPieces());
+	}
 
 	@Override
 	public String toString() {
@@ -90,7 +173,14 @@ public class PeerState {
 				", port=" + port +
 				", hasSharedFile=" + hasSharedFile +
 				", fileReceived=" + fileReceived +
-				", bitField=" + bitField +
 				'}';
+	}
+
+	public static void main(String args[]) {
+//		BitSet bitSet = new BitSet(5);
+//		BitSet bitSet1 = new BitSet(5);
+//		bitSet.set(0);
+//		bitSet1.set(0,4);
+//		System.out.println(bitSet.g);
 	}
 }

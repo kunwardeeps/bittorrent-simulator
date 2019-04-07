@@ -2,13 +2,14 @@ package com.bittorrent.dtos;
 
 import com.bittorrent.utils.Logger;
 
+import java.util.BitSet;
+
 public class BitField {
 
-	private static BitField bf;
-	private Logger logger;
+	private BitSet bitSet;
 
-	private BitField() {
-		init();
+	public BitField(int pieces) {
+		this.bitSet = new BitSet(pieces);
 	}
 
 	private void init() {
