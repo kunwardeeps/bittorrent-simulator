@@ -149,7 +149,15 @@ public class PeerConnectionHandler implements Runnable{
     }
 
     private void setDataRate(int size) {
-        double dataRate = size / stopTime - startTime;
+        double dataRate;
+        if (Math.abs(stopTime - startTime) > 0) {
+            dataRate = size / (stopTime - startTime);
+        }
+        else {
+            dataRate = 0;
+        }
+
+        System.out.println("Setting data rate " + dataRate);
         BitTorrentState.getPeers().get(remotePeerId).setDataRate(dataRate);
     }
 
