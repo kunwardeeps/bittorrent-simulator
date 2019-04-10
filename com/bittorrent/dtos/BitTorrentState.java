@@ -1,6 +1,6 @@
 package com.bittorrent.dtos;
 
-import com.bittorrent.main.PropertiesEnum;
+import com.bittorrent.utils.PropertiesEnum;
 
 import java.io.File;
 import java.io.FileInputStream;

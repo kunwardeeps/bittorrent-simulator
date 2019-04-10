@@ -1,7 +1,8 @@
-package com.bittorrent.main;
+package com.bittorrent.messaging;
 
 import com.bittorrent.dtos.BitTorrentState;
 import com.bittorrent.dtos.PeerState;
+import com.bittorrent.handlers.PeerConnectionHandler;
 import com.bittorrent.messaging.Message;
 
 public class AsyncMessageSender implements Runnable {

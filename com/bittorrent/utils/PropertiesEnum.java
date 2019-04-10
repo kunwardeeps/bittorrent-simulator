@@ -1,4 +1,4 @@
-package com.bittorrent.main;
+package com.bittorrent.utils;
 
 import java.io.File;
 

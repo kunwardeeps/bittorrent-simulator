@@ -1,6 +1,7 @@
-package com.bittorrent.main;
+package com.bittorrent.handlers;
 
 import com.bittorrent.dtos.PeerState;
+
 import java.net.ServerSocket;
 import java.net.Socket;
 

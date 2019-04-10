@@ -1,8 +1,10 @@
-package com.bittorrent.main;
+package com.bittorrent.handlers;
 
 import com.bittorrent.dtos.BitTorrentState;
 import com.bittorrent.dtos.PeerState;
+import com.bittorrent.messaging.AsyncMessageSender;
 import com.bittorrent.messaging.*;
+import com.bittorrent.utils.FileHandler;
 import com.bittorrent.utils.Logger;
 
 import java.io.*;

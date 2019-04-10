@@ -1,9 +1,6 @@
 package com.bittorrent.utils;
 
 import com.bittorrent.dtos.BitTorrentState;
-import com.bittorrent.dtos.ConnectionDTO;
-import com.bittorrent.dtos.PeerState;
-import com.bittorrent.main.Peer;
 
 import java.io.File;
 import java.io.FileOutputStream;

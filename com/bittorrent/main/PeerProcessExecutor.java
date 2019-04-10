@@ -2,17 +2,17 @@ package com.bittorrent.main;
 
 import com.bittorrent.dtos.BitTorrentState;
 import com.bittorrent.dtos.PeerState;
-import com.bittorrent.messaging.Message;
+import com.bittorrent.handlers.IncomingConnectionHandler;
+import com.bittorrent.handlers.PeerConnectionHandler;
+import com.bittorrent.scheduler.OptimisticUnchokingScheduler;
+import com.bittorrent.scheduler.PreferredNeighborsScheduler;
+import com.bittorrent.utils.FileHandler;
 import com.bittorrent.utils.Logger;
 
-import java.io.IOException;
 import java.net.Socket;
-import java.util.BitSet;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Timer;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentSkipListSet;
 
 public class PeerProcessExecutor implements Runnable{
 	private PeerState peerState;

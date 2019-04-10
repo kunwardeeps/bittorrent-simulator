@@ -22,6 +22,8 @@
 *.tar.gz
 *.rar
 
+project/
+
 .idea/
 out/
 *.iml

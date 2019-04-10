@@ -1,4 +1,4 @@
-package com.bittorrent.main;
+package com.bittorrent.scheduler;
 
 import com.bittorrent.dtos.BitTorrentState;
 import com.bittorrent.dtos.PeerState;
