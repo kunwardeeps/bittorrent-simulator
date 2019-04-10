@@ -3,8 +3,6 @@ package com.bittorrent.dtos;
 import com.bittorrent.messaging.Message;
 
 import java.util.BitSet;
-import java.util.LinkedList;
-import java.util.Queue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;

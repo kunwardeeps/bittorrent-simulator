@@ -19,11 +19,14 @@ public class AsyncMessageSender implements Runnable {
         System.out.println("Async running "+BitTorrentState.getPeers().keySet().toString());
         PeerState peerState = BitTorrentState.getPeers().get(this.peerId);
         while (true) {
-            if (!peerState.getQueue().isEmpty()){
-                Message message = peerState.getQueue().poll();
-                System.out.println(peerId + ": Removed from queue " + message.getMessageType());
-                peerConnectionHandler.sendMessage(message);
+            Message message = null;
+            try {
+                message = peerState.getQueue().take();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
+            System.out.println(peerId + ": Removed from queue " + message.getMessageType());
+            peerConnectionHandler.sendMessage(message);
         }
     }
 }
