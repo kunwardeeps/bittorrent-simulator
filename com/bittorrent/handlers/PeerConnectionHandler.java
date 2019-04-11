@@ -118,7 +118,7 @@ public class PeerConnectionHandler implements Runnable{
     private void processHave(Message receivedMsg) {
         HaveMessage haveMessage = (HaveMessage) receivedMsg;
         int index = (int) haveMessage.getPayload();
-        ;
+        logger.logReceivedHaveMessage(BitTorrentState.getPeers().get(remotePeerId), this.peerState.getPeerId());
 
         // set peer bitset info
         BitTorrentState.getPeers().get(remotePeerId).getBitField().set(index);
@@ -197,12 +197,13 @@ public class PeerConnectionHandler implements Runnable{
 
         if (this.peerState.preferredNeighboursCount() < BitTorrentState.getNumberOfPreferredNeighbors()){
             this.peerState.putPreferredNeighbours(remotePeerId);
+           logeer.logInterestedMessageReceived(BitTorrentState.getPeers().get(remotePeerId), this.peerState.getPeerId());
         }
     }
 
     private void processNotInterested() {
         this.peerState.removeInterestedNeighbours(remotePeerId);
-        logger.logNotInterestedMessageReceived(get(this.get(remotePeerId), this.peerState.getPeerId());
+        logger.logNotInterestedMessageReceived(get(BitTorrentState.getPeers().get(remotePeerId), this.peerState.getPeerId());
     }
 
     private void processBitField(Message message){
