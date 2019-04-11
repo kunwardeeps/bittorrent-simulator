@@ -2,6 +2,7 @@ package com.bittorrent.handlers;
 
 import com.bittorrent.dtos.PeerState;
 
+import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -16,20 +17,27 @@ public class IncomingConnectionHandler implements Runnable{
 
     @Override
     public void run() {
-        while(true)
-        {
-            try(ServerSocket serverSocket = new ServerSocket(peerState.getPort()))
-            {
+        ServerSocket serverSocket = null;
+        try {
+            serverSocket = new ServerSocket(peerState.getPort());
+            this.peerState.setServerSocket(serverSocket);
+            while (true) {
                 System.out.println("Peer Id " + peerState.getPeerId() + " accepting connections");
                 clientSocket = serverSocket.accept();
                 System.out.println("Connection is established to " + peerState.getPort() + " from " + clientSocket.getRemoteSocketAddress());
                 Thread t = new Thread(new PeerConnectionHandler(clientSocket, peerState));
                 t.start();
             }
-            catch(Exception e)
-            {
-                e.printStackTrace();
-                System.exit(0);
+        }
+        catch (Exception e) {
+
+            System.out.println("Exiting IncomingConnectionHandler!");
+        }
+        finally {
+            try {
+                serverSocket.close();
+            } catch (IOException e1) {
+                e1.printStackTrace();
             }
         }
     }

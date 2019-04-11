@@ -19,6 +19,7 @@ public class HandshakeMessage extends Message {
         return peerId;
     }
 
+    //TODO
     public boolean validate(String peerId) {
         return header == "P2PFILESHARINGPROJ" && peerId == this.peerId;
     }

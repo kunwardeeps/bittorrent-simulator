@@ -11,6 +11,7 @@ import java.io.*;
 import java.net.Socket;
 import java.util.BitSet;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class PeerConnectionHandler implements Runnable{
 
@@ -22,6 +23,8 @@ public class PeerConnectionHandler implements Runnable{
     private String remotePeerId;
     private long startTime;
     private long stopTime;
+    private AtomicBoolean running = new AtomicBoolean(false);
+    private Thread asyncMessageSender;
 
     public PeerConnectionHandler(Socket peerSocket, PeerState peerState) {
         this.peerSocket = peerSocket;
@@ -37,15 +40,17 @@ public class PeerConnectionHandler implements Runnable{
     public void run() {
         try
         {
+            running.set(true);
             os = new ObjectOutputStream(peerSocket.getOutputStream());
 
-            Thread asyncMessageSender = new Thread(new AsyncMessageSender(this.peerState.getPeerId(), this));
+            asyncMessageSender = new Thread(new AsyncMessageSender(this.peerState.getPeerId(), this));
             asyncMessageSender.start();
 
             sendMessage(new HandshakeMessage(this.peerState.getPeerId()));
 
             Message receivedMsg = null;
-            while ((receivedMsg = receiveMessage()) != null) {
+            while (running.get()) {
+                receivedMsg = receiveMessage();
                 System.out.println(this.peerState.getPeerId() + ": Received message type: " +
                         receivedMsg.getMessageType().name() + " from " + this.remotePeerId + ", message: " +
                         receivedMsg.toString());
@@ -90,11 +95,11 @@ public class PeerConnectionHandler implements Runnable{
                         System.out.println("Not implemented!");
                 }
             }
-
         }
         catch (Exception ex)
         {
-            ex.printStackTrace();
+            System.out.println("Exiting PeerConnectionHandler because of " + ex.getMessage());
+            stop();
         }
     }
 
@@ -140,7 +145,11 @@ public class PeerConnectionHandler implements Runnable{
         if (index == -1) {
             NotInterestedMessage notInterestedMessage = new NotInterestedMessage();
             sendMessage(notInterestedMessage);
-            FileHandler.writeToFile(this.peerState);
+            System.out.println(this.peerState.getBitField().nextClearBit(0));
+            if (this.peerState.getBitField().nextClearBit(0) == BitTorrentState.getNumberOfPieces()) {
+                FileHandler.writeToFile(this.peerState);
+                stop();
+            }
         }
         else {
             System.out.println("Requesting piece Index " + index);
@@ -223,6 +232,7 @@ public class PeerConnectionHandler implements Runnable{
     private void processHandshake(Message response) {
         HandshakeMessage handshakeMessage = (HandshakeMessage) response;
         this.remotePeerId = handshakeMessage.getPeerId();
+        //TODO
         if (Integer.parseInt(this.peerState.getPeerId()) < Integer.parseInt(handshakeMessage.getPeerId())) {
             logger.logTcpConnectionFrom(handshakeMessage.getPeerId(), this.peerState.getPeerId());
         }
@@ -233,25 +243,11 @@ public class PeerConnectionHandler implements Runnable{
         }
     }
 
-    public Message receiveMessage() {
-        try {
-            if (is == null) {
-                is = new ObjectInputStream(peerSocket.getInputStream());
-            }
-            return (Message) is.readObject();
+    public Message receiveMessage() throws IOException, ClassNotFoundException {
+        if (is == null) {
+            is = new ObjectInputStream(peerSocket.getInputStream());
         }
-        catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
-        catch (ClassNotFoundException e) {
-            e.printStackTrace();
-            return null;
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
+        return (Message) is.readObject();
 
     }
 
@@ -281,9 +277,15 @@ public class PeerConnectionHandler implements Runnable{
 
     public void stop() {
         try {
+            Thread.sleep(500);
+            System.out.println("Stopping tasks");
+            asyncMessageSender.interrupt();
+            this.peerState.stopScheduledTasks();
+            this.peerState.getServerSocket().close();
+            running.set(false);
             os.close();
             is.close();
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

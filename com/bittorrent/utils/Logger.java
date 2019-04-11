@@ -109,7 +109,7 @@ public class Logger {
 				+ ".");
 	}
 
-	public void logChangePreferredNeighbors(String peerId, List<ConnectionDTO> prefNeighbors) {
+	public void logChangePreferredNeighbors(String peerId, Map<String, String> preferredNeighbors) {
 
 		StringBuilder message = new StringBuilder();
 		message.append(getTimeStamp());
@@ -117,13 +117,12 @@ public class Logger {
 		message.append(peerId);
 		message.append(" has changed the preferred neighbors ");
 		String separator = "";
-		Iterator<ConnectionDTO> iter = prefNeighbors.iterator();
 
-		while (iter.hasNext()) {
+		for (String remotePeerId: preferredNeighbors.values()) {
 
 			message.append(separator);
 			separator = ", ";
-			message.append(iter.next().getRemotePeerId());
+			message.append(remotePeerId);
 
 		}
 		writeFile(message.toString() + ".");

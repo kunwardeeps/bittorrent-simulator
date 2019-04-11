@@ -89,12 +89,7 @@ public class BitTorrentState {
 	}
 
 	public static void calculateAndSetNumberOfPieces() {
-		if ((int) (fileSize % pieceSize) == 0) {
-			numberOfPieces = (int) (fileSize / pieceSize) + 1;
-		}
-		else {
-			numberOfPieces = (int) (fileSize / pieceSize);
-		}
+		numberOfPieces = (int)Math.ceil((double)fileSize / pieceSize);
 		System.out.println("BitTorrent current state - Number of pieces: " + numberOfPieces);
 	}
 

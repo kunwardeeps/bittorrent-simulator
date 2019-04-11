@@ -5,10 +5,13 @@ import com.bittorrent.dtos.PeerState;
 import com.bittorrent.handlers.PeerConnectionHandler;
 import com.bittorrent.messaging.Message;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 public class AsyncMessageSender implements Runnable {
 
     private String peerId;
     private PeerConnectionHandler peerConnectionHandler;
+    private AtomicBoolean running = new AtomicBoolean(false);
 
     public AsyncMessageSender(String peerId, PeerConnectionHandler peerConnectionHandler){
         this.peerId = peerId;
@@ -17,17 +20,21 @@ public class AsyncMessageSender implements Runnable {
 
     @Override
     public void run() {
-        System.out.println("Async running "+BitTorrentState.getPeers().keySet().toString());
-        PeerState peerState = BitTorrentState.getPeers().get(this.peerId);
-        while (true) {
-            Message message = null;
-            try {
-                message = peerState.getQueue().take();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+        try {
+            running.set(true);
+            System.out.println("Async running "+BitTorrentState.getPeers().keySet().toString());
+            PeerState peerState = BitTorrentState.getPeers().get(this.peerId);
+            while (running.get()) {
+                Message message = peerState.getQueue().take();
+                System.out.println(peerId + ": Removed from queue " + message.getMessageType());
+                peerConnectionHandler.sendMessage(message);
             }
-            System.out.println(peerId + ": Removed from queue " + message.getMessageType());
-            peerConnectionHandler.sendMessage(message);
+        } catch (InterruptedException e) {
+            System.out.println("Ending AsyncMessageSender");
         }
+    }
+
+    public void stop() {
+        this.running.set(false);
     }
 }

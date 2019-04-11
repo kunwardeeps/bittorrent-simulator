@@ -2,10 +2,13 @@ package com.bittorrent.dtos;
 
 import com.bittorrent.messaging.Message;
 
+import java.net.ServerSocket;
 import java.util.BitSet;
+import java.util.Timer;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class PeerState {
 
@@ -22,6 +25,32 @@ public class PeerState {
 	private ConcurrentHashMap<String, String> interestedNeighbours = new ConcurrentHashMap<>();
 	private BlockingQueue<Message> queue = new LinkedBlockingQueue<>();
 	private double dataRate = 0;
+	private Timer timer1;
+	private Timer timer2;
+	private ServerSocket serverSocket;
+
+	public ServerSocket getServerSocket() {
+		return serverSocket;
+	}
+
+	public void setServerSocket(ServerSocket serverSocket) {
+		this.serverSocket = serverSocket;
+	}
+
+	public void setTimer1(Timer timer1) {
+		this.timer1 = timer1;
+	}
+
+	public void setTimer2(Timer timer2) {
+		this.timer2 = timer2;
+	}
+
+	public void stopScheduledTasks() {
+		timer1.cancel();
+		timer1.purge();
+		timer2.cancel();
+		timer2.purge();
+	}
 
 	public void setInterestedNeighbours(ConcurrentHashMap<String, String> interestedNeighbours) {
 		this.interestedNeighbours = interestedNeighbours;
@@ -129,7 +158,7 @@ public class PeerState {
 			if (this.bitField == null) {
 				this.bitField = new BitSet(BitTorrentState.getNumberOfPieces());
 			}
-			this.bitField.set(0, BitTorrentState.getNumberOfPieces() - 1);
+			this.bitField.set(0, BitTorrentState.getNumberOfPieces());
 		}
 
 		this.hasSharedFile = hasSharedFile;
