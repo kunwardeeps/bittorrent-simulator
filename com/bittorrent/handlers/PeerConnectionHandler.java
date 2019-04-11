@@ -86,6 +86,7 @@ public class PeerConnectionHandler implements Runnable{
                     }
                     case CHOKE: {
                         break;
+
                     }
                     case UNCHOKE: {
                         processUnchoke();
@@ -110,12 +111,14 @@ public class PeerConnectionHandler implements Runnable{
         if (interestingPieceIndex != -1) {
             RequestMessage requestMessage = new RequestMessage(interestingPieceIndex);
             sendMessage(requestMessage);
+            logger.logUnchokingEvent(BitTorrentState.getPeers().get(remotePeerId), this.peerState.getPeerId());
         }
     }
 
     private void processHave(Message receivedMsg) {
         HaveMessage haveMessage = (HaveMessage) receivedMsg;
         int index = (int) haveMessage.getPayload();
+        ;
 
         // set peer bitset info
         BitTorrentState.getPeers().get(remotePeerId).getBitField().set(index);
@@ -199,6 +202,7 @@ public class PeerConnectionHandler implements Runnable{
 
     private void processNotInterested() {
         this.peerState.removeInterestedNeighbours(remotePeerId);
+        logger.logNotInterestedMessageReceived(get(this.get(remotePeerId), this.peerState.getPeerId());
     }
 
     private void processBitField(Message message){
@@ -234,7 +238,7 @@ public class PeerConnectionHandler implements Runnable{
         this.remotePeerId = handshakeMessage.getPeerId();
         //TODO
         if (Integer.parseInt(this.peerState.getPeerId()) < Integer.parseInt(handshakeMessage.getPeerId())) {
-            logger.logTcpConnectionFrom(handshakeMessage.getPeerId(), this.peerState.getPeerId());
+            logger.logTcpConnectionFrom(this.remotePeerId, this.peerState.getPeerId());
         }
         if (this.peerState.isHasSharedFile()){
             BitFieldMessage bitfieldMessage = new BitFieldMessage(this.peerState.getBitField());
