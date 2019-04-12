@@ -43,9 +43,6 @@ public class PeerConnectionHandler implements Runnable{
             running.set(true);
             os = new ObjectOutputStream(peerSocket.getOutputStream());
 
-            asyncMessageSender = new Thread(new AsyncMessageSender(this.peerState.getPeerId(), this));
-            asyncMessageSender.start();
-
             sendMessage(new HandshakeMessage(this.peerState.getPeerId()));
 
             Message receivedMsg = null;
@@ -85,6 +82,7 @@ public class PeerConnectionHandler implements Runnable{
                         break;
                     }
                     case CHOKE: {
+                        processChoke();
                         break;
                     }
                     case UNCHOKE: {
@@ -103,7 +101,13 @@ public class PeerConnectionHandler implements Runnable{
         }
     }
 
+    private void processChoke() {
+        logger.logChokingEvent(remotePeerId);
+    }
+
     private void processUnchoke() {
+
+        logger.logUnchokingEvent(remotePeerId);
 
         int interestingPieceIndex = getNextInterestingPieceIndex(BitTorrentState.getPeers().get(remotePeerId).getBitField(), this.peerState.getBitField());
 
@@ -116,6 +120,8 @@ public class PeerConnectionHandler implements Runnable{
     private void processHave(Message receivedMsg) {
         HaveMessage haveMessage = (HaveMessage) receivedMsg;
         int index = (int) haveMessage.getPayload();
+
+        logger.logReceivedHaveMessage(remotePeerId, index);
 
         // set peer bitset info
         BitTorrentState.getPeers().get(remotePeerId).getBitField().set(index);
@@ -135,6 +141,7 @@ public class PeerConnectionHandler implements Runnable{
 
         if (piece.length != 0) {
             this.peerState.putFileSplitMap(pieceMessage.getIndex(), piece);
+            logger.logPieceDownloadComplete(remotePeerId, pieceMessage.getIndex(), this.peerState.getFileSplitMap().size());
             broadcastMessage(new HaveMessage(pieceMessage.getIndex()));
         }
         else {
@@ -148,6 +155,7 @@ public class PeerConnectionHandler implements Runnable{
             System.out.println(this.peerState.getBitField().nextClearBit(0));
             if (this.peerState.getBitField().nextClearBit(0) == BitTorrentState.getNumberOfPieces()) {
                 FileHandler.writeToFile(this.peerState);
+                logger.logDownloadComplete();
                 stop();
             }
         }
@@ -190,6 +198,9 @@ public class PeerConnectionHandler implements Runnable{
     }
 
     private void processInterested() {
+
+        logger.logInterestedMessageReceived(remotePeerId);
+
         this.peerState.putInterestedNeighbours(remotePeerId);
 
         if (this.peerState.preferredNeighboursCount() < BitTorrentState.getNumberOfPreferredNeighbors()){
@@ -198,6 +209,7 @@ public class PeerConnectionHandler implements Runnable{
     }
 
     private void processNotInterested() {
+        logger.logNotInterestedMessageReceived(remotePeerId);
         this.peerState.removeInterestedNeighbours(remotePeerId);
     }
 
@@ -233,8 +245,9 @@ public class PeerConnectionHandler implements Runnable{
         HandshakeMessage handshakeMessage = (HandshakeMessage) response;
         this.remotePeerId = handshakeMessage.getPeerId();
         //TODO
-        if (Integer.parseInt(this.peerState.getPeerId()) < Integer.parseInt(handshakeMessage.getPeerId())) {
-            logger.logTcpConnectionFrom(handshakeMessage.getPeerId(), this.peerState.getPeerId());
+        if (Integer.parseInt(this.peerState.getPeerId()) < Integer.parseInt(this.remotePeerId)) {
+            logger.logTcpConnectionFrom(this.remotePeerId);
+            this.peerState.getConnections().put(this.remotePeerId, this);
         }
         if (this.peerState.isHasSharedFile()){
             BitFieldMessage bitfieldMessage = new BitFieldMessage(this.peerState.getBitField());
@@ -266,12 +279,10 @@ public class PeerConnectionHandler implements Runnable{
     }
 
     public void broadcastMessage(Message message) {
-        Map<String, PeerState> peers = BitTorrentState.getPeers();
+        Map<String, PeerConnectionHandler> connections = peerState.getConnections();
 
-        for (PeerState peerState : peers.values()){
-            if (!peerState.getPeerId().equals(this.peerState.getPeerId())){
-                System.out.println("Adding to queue " + peerState.getQueue().add(message));
-            }
+        for (PeerConnectionHandler connection : connections.values()){
+            connection.sendMessage(message);
         }
     }
 

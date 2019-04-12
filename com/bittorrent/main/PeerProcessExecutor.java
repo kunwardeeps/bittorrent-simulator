@@ -4,6 +4,7 @@ import com.bittorrent.dtos.BitTorrentState;
 import com.bittorrent.dtos.PeerState;
 import com.bittorrent.handlers.IncomingConnectionHandler;
 import com.bittorrent.handlers.PeerConnectionHandler;
+import com.bittorrent.messaging.AsyncMessageSender;
 import com.bittorrent.scheduler.OptimisticUnchokingScheduler;
 import com.bittorrent.scheduler.PreferredNeighborsScheduler;
 import com.bittorrent.utils.FileHandler;
@@ -79,10 +80,11 @@ public class PeerProcessExecutor implements Runnable{
 			if (currentSeqId > remotePeer.getSequenceId()) {
 
 				try {
-					logger.logTcpConnectionTo(this.peerState.getPeerId(), remotePeer.getPeerId());
+					logger.logTcpConnectionTo(remotePeer.getPeerId());
 					Socket clientSocket = new Socket(remotePeer.getHostName(), remotePeer.getPort());
 					PeerConnectionHandler peerConnectionHandler = new PeerConnectionHandler(clientSocket, peerState);
 					peerConnectionHandler.setRemotePeerId(remotePeer.getPeerId());
+					peerState.getConnections().put(remotePeer.getPeerId(), peerConnectionHandler);
 					Thread t = new Thread(peerConnectionHandler);
 					t.start();
 				} catch (Exception e) {

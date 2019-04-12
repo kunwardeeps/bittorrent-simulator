@@ -1,5 +1,6 @@
 package com.bittorrent.dtos;
 
+import com.bittorrent.handlers.PeerConnectionHandler;
 import com.bittorrent.messaging.Message;
 
 import java.net.ServerSocket;
@@ -23,11 +24,16 @@ public class PeerState {
 	private ConcurrentHashMap<String, String> preferredNeighbours = new ConcurrentHashMap<>();
 	private ConcurrentHashMap<String, String> chokedNeighbours = new ConcurrentHashMap<>();
 	private ConcurrentHashMap<String, String> interestedNeighbours = new ConcurrentHashMap<>();
+	private ConcurrentHashMap<String, PeerConnectionHandler> connections = new ConcurrentHashMap<>();
 	private BlockingQueue<Message> queue = new LinkedBlockingQueue<>();
 	private double dataRate = 0;
 	private Timer timer1;
 	private Timer timer2;
 	private ServerSocket serverSocket;
+
+	public ConcurrentHashMap<String, PeerConnectionHandler> getConnections() {
+		return connections;
+	}
 
 	public ServerSocket getServerSocket() {
 		return serverSocket;

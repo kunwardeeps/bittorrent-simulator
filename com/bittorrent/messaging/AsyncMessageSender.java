@@ -10,12 +10,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class AsyncMessageSender implements Runnable {
 
     private String peerId;
-    private PeerConnectionHandler peerConnectionHandler;
     private AtomicBoolean running = new AtomicBoolean(false);
 
-    public AsyncMessageSender(String peerId, PeerConnectionHandler peerConnectionHandler){
+    public AsyncMessageSender(String peerId){
         this.peerId = peerId;
-        this.peerConnectionHandler = peerConnectionHandler;
     }
 
     @Override
@@ -27,7 +25,7 @@ public class AsyncMessageSender implements Runnable {
             while (running.get()) {
                 Message message = peerState.getQueue().take();
                 System.out.println(peerId + ": Removed from queue " + message.getMessageType());
-                peerConnectionHandler.sendMessage(message);
+                //peerConnectionHandler.sendMessage(message);
             }
         } catch (InterruptedException e) {
             System.out.println("Ending AsyncMessageSender");

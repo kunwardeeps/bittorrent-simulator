@@ -22,6 +22,8 @@ public class Logger {
 
 	public PrintWriter printWriter = null;
 
+	private String peerId;
+
 	public static Logger getLogger(String peerId) {
 		synchronized (Logger.class) {
 			if (map.get(peerId) == null) {
@@ -39,6 +41,7 @@ public class Logger {
 		try {
 			System.out.println("Logger instantiated for peer: "
 					+ peerId);
+			this.peerId = peerId;
 			File file = makeLogDirectoryForPeer(peerId);
 			initPrintWriter(file);
 		}
@@ -78,11 +81,11 @@ public class Logger {
 		}
 	}
 
-	public void logReceivedHaveMessage(String toId, String fromId, int pieceIndex) {
+	public void logReceivedHaveMessage(String fromId, int pieceIndex) {
 
 		writeFile(getTimeStamp()
 				+ ": Peer "
-				+ toId
+				+ peerId
 				+ " received the 'have' messaging from "
 				+ fromId
 				+ " for the piece "
@@ -91,31 +94,31 @@ public class Logger {
 
 
 
-	public void logTcpConnectionTo(String fromId, String toId) {
+	public void logTcpConnectionTo(String toId) {
 		writeFile(getTimeStamp()
 				+ ": Peer "
-				+ fromId
+				+ peerId
 				+ " makes a connection to Peer "
 				+ toId
 				+ ".");
 	}
 
-	public void logTcpConnectionFrom(String fromId, String toId) {
+	public void logTcpConnectionFrom(String fromId) {
 		writeFile(getTimeStamp()
 				+ ": Peer "
-				+ toId
+				+ peerId
 				+ " is connected from Peer "
 				+ fromId
 				+ ".");
 	}
 
-	public void logChangePreferredNeighbors(String peerId, Map<String, String> preferredNeighbors) {
+	public void logChangePreferredNeighbors(Map<String, String> preferredNeighbors) {
 
 		StringBuilder message = new StringBuilder();
 		message.append(getTimeStamp());
 		message.append(": Peer ");
 		message.append(peerId);
-		message.append(" has changed the preferred neighbors ");
+		message.append(" has preferred neighbors [");
 		String separator = "";
 
 		for (String remotePeerId: preferredNeighbors.values()) {
@@ -125,68 +128,68 @@ public class Logger {
 			message.append(remotePeerId);
 
 		}
-		writeFile(message.toString() + ".");
+		writeFile(message.toString() + "].");
 	}
 
 
-	public void logNewOptimisticallyUnchokedNeighbor(String source, String unchokedNeighbor) {
+	public void logNewOptimisticallyUnchokedNeighbor(String unchokedNeighbor) {
 
 		writeFile(getTimeStamp()
 				+ ": Peer "
-				+ source
+				+ peerId
 				+ " has the optimistically unchoked neighbor "
 				+ unchokedNeighbor
 				+ ".");
 	}
 
-	public void logUnchokingEvent(String peerId1, String peerId2) {
+	public void logUnchokingEvent(String peerId1) {
 
 		writeFile(getTimeStamp()
 				+ ": Peer "
 				+ peerId1
 				+ " is unchoked by "
-				+ peerId2
+				+ peerId
 				+ ".");
 	}
 
-	public void logChokingEvent(String peerId1, String peerId2) {
+	public void logChokingEvent(String peerId1) {
 
 		writeFile(getTimeStamp()
 				+ ": Peer "
 				+ peerId1
 				+ " is choked by "
-				+ peerId2
+				+ peerId
 				+ ".");
 	}
 
 
-	public void logInterestedMessageReceived(String to, String from) {
+	public void logInterestedMessageReceived(String from) {
 
 		writeFile(getTimeStamp()
-				+ ":Peer "
-				+ to
+				+ ": Peer "
+				+ peerId
 				+ " received the 'interested' messaging from "
 				+ from
 				+ ".");
 	}
 
 
-	public void logNotInterestedMessageReceived(String to, String from) {
+	public void logNotInterestedMessageReceived(String from) {
 
 		writeFile(getTimeStamp()
-				+ "Peer "
-				+ to
+				+ ": Peer "
+				+ peerId
 				+ " received the 'not interested' messaging from "
 				+ from
 				+ ".");
 	}
 
 
-	public void logPieceDownloadComplete(String to, String from, int pieceIndex, int numberOfPieces) {
+	public void logPieceDownloadComplete(String from, int pieceIndex, int numberOfPieces) {
 
 		writeFile(getTimeStamp()
-				+ "Peer "
-				+ to
+				+ ": Peer "
+				+ peerId
 				+ " has downloaded the piece "
 				+ pieceIndex
 				+ " from "
@@ -197,7 +200,7 @@ public class Logger {
 
 	}
 
-	public void logDownloadComplete(String peerId) {
+	public void logDownloadComplete() {
 
 		writeFile(getTimeStamp()
 				+ "Peer "

@@ -4,6 +4,7 @@ import com.bittorrent.dtos.BitTorrentState;
 import com.bittorrent.dtos.PeerState;
 import com.bittorrent.messaging.ChokeMessage;
 import com.bittorrent.messaging.UnchokeMessage;
+import com.bittorrent.utils.Logger;
 
 import java.util.*;
 
@@ -45,17 +46,23 @@ public class PreferredNeighborsScheduler extends TimerTask {
             }
             newPreferredNeighbours.put(peerId, peerId);
             if (!oldPreferredNeighbours.containsKey(peerId)){
-                System.out.println(this.currentPeerId + ": sending UNCHOKE to "+peerId);
-                BitTorrentState.getPeers().get(peerId).getQueue().add(new UnchokeMessage());
+                //System.out.println(this.currentPeerId + ": sending UNCHOKE to "+peerId);
+                if (currentPeerState.getConnections().size() > 0) {
+                    currentPeerState.getConnections().get(peerId).sendMessage(new UnchokeMessage());
+                }
+
             }
         }
         for (String peerId: oldPreferredNeighbours.values()) {
             if (!newPreferredNeighbours.containsKey(peerId)) {
-                System.out.println(this.currentPeerId + ": sending CHOKE to "+peerId);
-                BitTorrentState.getPeers().get(peerId).getQueue().add(new ChokeMessage());
+                //System.out.println(this.currentPeerId + ": sending CHOKE to "+peerId);
+                if (currentPeerState.getConnections().size() > 0) {
+                    currentPeerState.getConnections().get(peerId).sendMessage(new ChokeMessage());
+                }
             }
         }
         currentPeerState.getPreferredNeighbours().clear();
         currentPeerState.getPreferredNeighbours().putAll(newPreferredNeighbours);
+        Logger.getLogger(this.currentPeerId).logChangePreferredNeighbors(newPreferredNeighbours);
     }
 }

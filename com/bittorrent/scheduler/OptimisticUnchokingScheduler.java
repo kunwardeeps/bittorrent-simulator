@@ -4,6 +4,7 @@ import com.bittorrent.dtos.BitTorrentState;
 import com.bittorrent.dtos.PeerState;
 import com.bittorrent.messaging.ChokeMessage;
 import com.bittorrent.messaging.UnchokeMessage;
+import com.bittorrent.utils.Logger;
 
 import java.util.*;
 
@@ -21,8 +22,6 @@ public class OptimisticUnchokingScheduler extends TimerTask {
         PeerState currentPeerState = BitTorrentState.getPeers().get(currentPeerId);
         List<String> chokedNeighbours = new ArrayList<>();
 
-
-
         for (String peerId: BitTorrentState.getPeers().keySet()) {
             if (peerId.equals(currentPeerId)) {
                 continue;
@@ -37,7 +36,7 @@ public class OptimisticUnchokingScheduler extends TimerTask {
         }
         Collections.shuffle(chokedNeighbours);
         String optimisticUnchokedPeerId = chokedNeighbours.get(0);
-        BitTorrentState.getPeers().get(optimisticUnchokedPeerId).getQueue().add(new UnchokeMessage());
-
+        currentPeerState.getConnections().get(optimisticUnchokedPeerId).sendMessage(new UnchokeMessage());
+        Logger.getLogger(currentPeerId).logNewOptimisticallyUnchokedNeighbor(optimisticUnchokedPeerId);
     }
 }
