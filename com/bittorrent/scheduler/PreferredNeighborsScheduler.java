@@ -9,12 +9,11 @@ import com.bittorrent.utils.Logger;
 import java.util.*;
 
 public class PreferredNeighborsScheduler extends TimerTask {
-
-    private String currentPeerId;
+    private PeerState currentPeerState;
     private PriorityQueue<PeerState> maxHeap;
 
-    public PreferredNeighborsScheduler(String currentPeerId) {
-        this.currentPeerId = currentPeerId;
+    public PreferredNeighborsScheduler(PeerState currentPeerState) {
+        this.currentPeerState = currentPeerState;
         this.maxHeap = new PriorityQueue<>(BitTorrentState.numberOfPreferredNeighbors,
                 new Comparator<PeerState>() {
                     @Override
@@ -26,13 +25,21 @@ public class PreferredNeighborsScheduler extends TimerTask {
 
     @Override
     public void run() {
-        System.out.println("PreferredNeighborsTask: start");
+        System.out.println("PreferredNeighborsTask " + this.currentPeerState.getPeerId() + ": interested neighbors - " +
+                this.currentPeerState.getInterestedNeighbours().values());
+
+        if (currentPeerState.getInterestedNeighbours().isEmpty()) {
+            System.out.println("PreferredNeighborsTask: No interested neighbors for " + this.currentPeerState.getPeerId());
+            return;
+        }
 
         maxHeap.clear();
-        maxHeap.addAll(BitTorrentState.getPeers().values());
+        for (String interestedNeighbor: currentPeerState.getInterestedNeighbours().values()) {
+            maxHeap.add(BitTorrentState.getPeers().get(interestedNeighbor));
+        }
         System.out.println("PreferredNeighborsTask: maxHeapSize - "+maxHeap.size());
 
-        PeerState currentPeerState = BitTorrentState.getPeers().get(this.currentPeerId);
+
 
         Map<String, String> oldPreferredNeighbours = new HashMap<>();
         oldPreferredNeighbours.putAll(currentPeerState.getPreferredNeighbours());
@@ -40,7 +47,8 @@ public class PreferredNeighborsScheduler extends TimerTask {
         Map<String, String> newPreferredNeighbours = new HashMap<>();
         for (int i = 0; i < BitTorrentState.numberOfPreferredNeighbors; i++) {
             String peerId = maxHeap.poll().getPeerId();
-            if (currentPeerId.equals(peerId)) {
+            if (currentPeerState.getPeerId().equals(peerId)) {
+                // this should not happen
                 i--;
                 continue;
             }
@@ -63,6 +71,6 @@ public class PreferredNeighborsScheduler extends TimerTask {
         }
         currentPeerState.getPreferredNeighbours().clear();
         currentPeerState.getPreferredNeighbours().putAll(newPreferredNeighbours);
-        Logger.getLogger(this.currentPeerId).logChangePreferredNeighbors(newPreferredNeighbours);
+        Logger.getLogger(this.currentPeerState.getPeerId()).logChangePreferredNeighbors(newPreferredNeighbours);
     }
 }

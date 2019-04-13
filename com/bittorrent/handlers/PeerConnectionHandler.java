@@ -203,9 +203,6 @@ public class PeerConnectionHandler implements Runnable{
 
         this.peerState.putInterestedNeighbours(remotePeerId);
 
-        if (this.peerState.preferredNeighboursCount() < BitTorrentState.getNumberOfPreferredNeighbors()){
-            this.peerState.putPreferredNeighbours(remotePeerId);
-        }
     }
 
     private void processNotInterested() {
@@ -288,9 +285,9 @@ public class PeerConnectionHandler implements Runnable{
 
     public void stop() {
         try {
-            Thread.sleep(500);
             System.out.println("Stopping tasks");
-            asyncMessageSender.interrupt();
+            Thread.sleep(500);
+            //asyncMessageSender.interrupt();
             this.peerState.stopScheduledTasks();
             this.peerState.getServerSocket().close();
             running.set(false);

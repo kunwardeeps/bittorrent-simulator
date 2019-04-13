@@ -10,20 +10,25 @@ import java.util.*;
 
 public class OptimisticUnchokingScheduler extends TimerTask {
 
-    private String currentPeerId;
+    private PeerState currentPeerState;
 
-    public OptimisticUnchokingScheduler(String currentPeerId) {
-        this.currentPeerId = currentPeerId;
+    public OptimisticUnchokingScheduler(PeerState currentPeerState) {
+        this.currentPeerState = currentPeerState;
     }
 
     @Override
     public void run() {
         System.out.println("OptimisticUnchokingTask: start");
-        PeerState currentPeerState = BitTorrentState.getPeers().get(currentPeerId);
+
+        if (currentPeerState.getInterestedNeighbours().isEmpty()) {
+            System.out.println("OptimisticUnchokingTask: No interested neighbors for " + this.currentPeerState.getPeerId());
+            return;
+        }
+
         List<String> chokedNeighbours = new ArrayList<>();
 
-        for (String peerId: BitTorrentState.getPeers().keySet()) {
-            if (peerId.equals(currentPeerId)) {
+        for (String peerId: currentPeerState.getInterestedNeighbours().values()) {
+            if (peerId.equals(currentPeerState.getPeerId())) {
                 continue;
             }
             if (!currentPeerState.getPreferredNeighbours().containsKey(peerId)) {
@@ -37,6 +42,6 @@ public class OptimisticUnchokingScheduler extends TimerTask {
         Collections.shuffle(chokedNeighbours);
         String optimisticUnchokedPeerId = chokedNeighbours.get(0);
         currentPeerState.getConnections().get(optimisticUnchokedPeerId).sendMessage(new UnchokeMessage());
-        Logger.getLogger(currentPeerId).logNewOptimisticallyUnchokedNeighbor(optimisticUnchokedPeerId);
+        Logger.getLogger(currentPeerState.getPeerId()).logNewOptimisticallyUnchokedNeighbor(optimisticUnchokedPeerId);
     }
 }

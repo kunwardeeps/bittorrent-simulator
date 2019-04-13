@@ -86,7 +86,7 @@ public class Logger {
 		writeFile(getTimeStamp()
 				+ ": Peer "
 				+ peerId
-				+ " received the 'have' messaging from "
+				+ " received the 'have' message from "
 				+ fromId
 				+ " for the piece "
 				+ pieceIndex + ".");

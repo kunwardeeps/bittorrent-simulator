@@ -2,13 +2,20 @@ import java.io.IOException;
 
 import com.bittorrent.main.*;
 
-public class PeerProcess {
+public class peerProcess {
 
-	private static boolean simulate = true;
+	private static boolean simulate = false;
 
 	public static void main (String args[]) throws IOException, InterruptedException {
-		String[] peers = new String[] {"1001", "1002"};
+		String[] peers = new String[] {"1001", "1002", "1003"};
 		PeerProcessExecutor peerProcessExecutor = null;
+
+		for (String arg: args){
+			if (arg.equals("-s")){
+				simulate = true;
+			}
+		}
+
 		if (simulate) {
 			for (String peerId: peers) {
 				Thread t = new Thread(new PeerProcessExecutor(peerId));

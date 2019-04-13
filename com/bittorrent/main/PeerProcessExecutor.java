@@ -47,13 +47,13 @@ public class PeerProcessExecutor implements Runnable{
 
 		// Periodically select preferred neighbors for this peer
 		Timer timer1 = new Timer();
-		PreferredNeighborsScheduler preferredNeighborsScheduler = new PreferredNeighborsScheduler(peerState.getPeerId());
-		timer1.scheduleAtFixedRate(preferredNeighborsScheduler, 500, BitTorrentState.getUnchokingInterval() * 1000);
+		PreferredNeighborsScheduler preferredNeighborsScheduler = new PreferredNeighborsScheduler(peerState);
+		timer1.scheduleAtFixedRate(preferredNeighborsScheduler, 200, BitTorrentState.getUnchokingInterval() * 1000);
 		this.peerState.setTimer1(timer1);
 
 		// Start OptimisticUnchokedPeerScheduler
 		Timer timer2 = new Timer();
-		OptimisticUnchokingScheduler optimisticUnchokingScheduler = new OptimisticUnchokingScheduler(peerState.getPeerId());
+		OptimisticUnchokingScheduler optimisticUnchokingScheduler = new OptimisticUnchokingScheduler(peerState);
 		timer2.scheduleAtFixedRate(optimisticUnchokingScheduler, 500, BitTorrentState.getOptimisticUnchokingInterval() * 1000);
 		this.peerState.setTimer2(timer2);
 

@@ -5,11 +5,11 @@ import com.bittorrent.messaging.Message;
 
 import java.net.ServerSocket;
 import java.util.BitSet;
+import java.util.Map;
 import java.util.Timer;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class PeerState {
 
@@ -23,7 +23,7 @@ public class PeerState {
 	private ConcurrentHashMap<Integer, byte[]> fileSplitMap;
 	private ConcurrentHashMap<String, String> preferredNeighbours = new ConcurrentHashMap<>();
 	private ConcurrentHashMap<String, String> chokedNeighbours = new ConcurrentHashMap<>();
-	private ConcurrentHashMap<String, String> interestedNeighbours = new ConcurrentHashMap<>();
+	private Map<String, String> interestedNeighbours = new ConcurrentHashMap<>();
 	private ConcurrentHashMap<String, PeerConnectionHandler> connections = new ConcurrentHashMap<>();
 	private BlockingQueue<Message> queue = new LinkedBlockingQueue<>();
 	private double dataRate = 0;
@@ -58,7 +58,7 @@ public class PeerState {
 		timer2.purge();
 	}
 
-	public void setInterestedNeighbours(ConcurrentHashMap<String, String> interestedNeighbours) {
+	public void setInterestedNeighbours(Map<String, String> interestedNeighbours) {
 		this.interestedNeighbours = interestedNeighbours;
 	}
 
@@ -79,7 +79,7 @@ public class PeerState {
 		this.bitField.set(index);
 	}
 
-	public ConcurrentHashMap<String, String> getInterestedNeighbours() {
+	public Map<String, String> getInterestedNeighbours() {
 		return interestedNeighbours;
 	}
 
@@ -92,7 +92,7 @@ public class PeerState {
 	}
 
 	public void putInterestedNeighbours(String peerId) {
-		interestedNeighbours.put(peerId, peerId);
+		this.interestedNeighbours.put(peerId, peerId);
 	}
 
 	public void putPreferredNeighbours(String peerId) {
