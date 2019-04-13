@@ -157,7 +157,7 @@ public class PeerConnectionHandler implements Runnable{
                 FileHandler.writeToFile(this.peerState);
                 logger.logDownloadComplete();
                 if (BitTorrentState.hasAllPeersDownloadedFile()) {
-                    stop();
+                    stopAllConnections();
                 }
             }
         }
@@ -211,7 +211,7 @@ public class PeerConnectionHandler implements Runnable{
         logger.logNotInterestedMessageReceived(remotePeerId);
         this.peerState.removeInterestedNeighbours(remotePeerId);
         if (BitTorrentState.hasAllPeersDownloadedFile()) {
-            stop();
+            stopAllConnections();
         }
     }
 
@@ -285,6 +285,12 @@ public class PeerConnectionHandler implements Runnable{
 
         for (PeerConnectionHandler connection : connections.values()){
             connection.sendMessage(message);
+        }
+    }
+
+    public void stopAllConnections() {
+        for (PeerConnectionHandler peerConnectionHandler: this.peerState.getConnections().values()) {
+            peerConnectionHandler.stop();
         }
     }
 
