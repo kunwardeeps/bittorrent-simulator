@@ -188,4 +188,14 @@ public class BitTorrentState {
 
 	}
 
+	public static synchronized boolean hasAllPeersDownloadedFile() {
+		for (PeerState peerState: peers.values()) {
+			if (peerState.getBitField().nextClearBit(0) != numberOfPieces) {
+				System.out.println(peerState.getPeerId() + " has incomplete file, so not exiting");
+				return false;
+			}
+		}
+		return true;
+	}
+
 }

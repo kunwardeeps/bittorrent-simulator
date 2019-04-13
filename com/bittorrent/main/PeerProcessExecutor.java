@@ -59,7 +59,7 @@ public class PeerProcessExecutor implements Runnable{
 
 		try {
 			t.join();
-			System.out.println("Exiting PeerProcessExecutor");
+			System.out.println(this.peerState.getPeerId() + ": Exiting PeerProcessExecutor");
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}

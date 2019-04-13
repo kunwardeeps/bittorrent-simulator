@@ -6,7 +6,7 @@ public class peerProcess {
 
 	private static boolean simulate = false;
 
-	public static void main (String args[]) throws IOException, InterruptedException {
+	public static void main (String args[]) {
 		String[] peers = new String[] {"1001", "1002", "1003"};
 		PeerProcessExecutor peerProcessExecutor = null;
 

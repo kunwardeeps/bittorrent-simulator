@@ -10,6 +10,7 @@ import java.util.Timer;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class PeerState {
 
@@ -30,6 +31,15 @@ public class PeerState {
 	private Timer timer1;
 	private Timer timer2;
 	private ServerSocket serverSocket;
+	private AtomicBoolean downloadComplete = new AtomicBoolean(false);
+
+	public boolean getDownloadComplete() {
+		return downloadComplete.get();
+	}
+
+	public void setDownloadComplete(boolean value) {
+		this.downloadComplete.set(value);
+	}
 
 	public ConcurrentHashMap<String, PeerConnectionHandler> getConnections() {
 		return connections;
@@ -52,6 +62,7 @@ public class PeerState {
 	}
 
 	public void stopScheduledTasks() {
+		System.out.println(getPeerId() + ": stopping scheduler tasks");
 		timer1.cancel();
 		timer1.purge();
 		timer2.cancel();

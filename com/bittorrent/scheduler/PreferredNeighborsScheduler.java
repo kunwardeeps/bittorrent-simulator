@@ -45,7 +45,7 @@ public class PreferredNeighborsScheduler extends TimerTask {
         oldPreferredNeighbours.putAll(currentPeerState.getPreferredNeighbours());
 
         Map<String, String> newPreferredNeighbours = new HashMap<>();
-        for (int i = 0; i < BitTorrentState.numberOfPreferredNeighbors; i++) {
+        for (int i = 0; i < currentPeerState.getInterestedNeighbours().size(); i++) {
             String peerId = maxHeap.poll().getPeerId();
             if (currentPeerState.getPeerId().equals(peerId)) {
                 // this should not happen

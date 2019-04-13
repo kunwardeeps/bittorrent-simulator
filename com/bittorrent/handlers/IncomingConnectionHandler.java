@@ -31,7 +31,7 @@ public class IncomingConnectionHandler implements Runnable{
         }
         catch (Exception e) {
 
-            System.out.println("Exiting IncomingConnectionHandler!");
+            System.out.println(this.peerState.getPeerId() + ": Exiting IncomingConnectionHandler!");
         }
         finally {
             try {

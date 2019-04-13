@@ -7,6 +7,9 @@
 # dat file
 *.dat
 
+# bak file
+*.bak
+
 # BlueJ files
 *.ctxt
 

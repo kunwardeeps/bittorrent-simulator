@@ -23,7 +23,7 @@ public class PeerConnectionHandler implements Runnable{
     private String remotePeerId;
     private long startTime;
     private long stopTime;
-    private AtomicBoolean running = new AtomicBoolean(false);
+    private boolean running = false;
     private Thread asyncMessageSender;
 
     public PeerConnectionHandler(Socket peerSocket, PeerState peerState) {
@@ -40,13 +40,13 @@ public class PeerConnectionHandler implements Runnable{
     public void run() {
         try
         {
-            running.set(true);
+            running = true;
             os = new ObjectOutputStream(peerSocket.getOutputStream());
 
             sendMessage(new HandshakeMessage(this.peerState.getPeerId()));
 
             Message receivedMsg = null;
-            while (running.get()) {
+            while (running) {
                 receivedMsg = receiveMessage();
                 System.out.println(this.peerState.getPeerId() + ": Received message type: " +
                         receivedMsg.getMessageType().name() + " from " + this.remotePeerId + ", message: " +
@@ -96,7 +96,7 @@ public class PeerConnectionHandler implements Runnable{
         }
         catch (Exception ex)
         {
-            System.out.println("Exiting PeerConnectionHandler because of " + ex.getMessage());
+            System.out.println(this.peerState.getPeerId() + ": Exiting PeerConnectionHandler because of " + ex.getStackTrace()[0]);
             stop();
         }
     }
@@ -151,16 +151,18 @@ public class PeerConnectionHandler implements Runnable{
                 this.peerState.getBitField());
         if (index == -1) {
             NotInterestedMessage notInterestedMessage = new NotInterestedMessage();
-            sendMessage(notInterestedMessage);
+            broadcastMessage(notInterestedMessage);
             System.out.println(this.peerState.getBitField().nextClearBit(0));
             if (this.peerState.getBitField().nextClearBit(0) == BitTorrentState.getNumberOfPieces()) {
                 FileHandler.writeToFile(this.peerState);
                 logger.logDownloadComplete();
-                stop();
+//                if (BitTorrentState.hasAllPeersDownloadedFile()) {
+//                    stop();
+//                }
             }
         }
         else {
-            System.out.println("Requesting piece Index " + index);
+            System.out.println(this.peerState.getPeerId() + ": Requesting piece Index " + index);
             startTime = System.currentTimeMillis();
             RequestMessage requestMessage = new RequestMessage(index);
             sendMessage(requestMessage);
@@ -189,11 +191,11 @@ public class PeerConnectionHandler implements Runnable{
                 sendMessage(pieceMessage);
             }
             else {
-                System.out.println("Error: Discarding request message as piece does not exist!");
+                System.out.println(this.peerState.getPeerId() + ": Error: Discarding request message as piece does not exist!");
             }
         }
         else {
-            System.out.println("Discarding request message as peer not in preferred neighbour list!");
+            System.out.println(this.peerState.getPeerId() + ": Discarding request message as peer not in preferred neighbour list!");
         }
     }
 
@@ -208,6 +210,9 @@ public class PeerConnectionHandler implements Runnable{
     private void processNotInterested() {
         logger.logNotInterestedMessageReceived(remotePeerId);
         this.peerState.removeInterestedNeighbours(remotePeerId);
+        if (BitTorrentState.hasAllPeersDownloadedFile()) {
+            stop();
+        }
     }
 
     private void processBitField(Message message){
@@ -262,7 +267,7 @@ public class PeerConnectionHandler implements Runnable{
     }
 
     public synchronized void sendMessage(Message message) {
-        System.out.println("Sending " + message.getMessageType().name() + " message: " + message.toString());
+        System.out.println(this.peerState.getPeerId() + ": Sending " + message.getMessageType().name() + " message: " + message.toString());
         try {
             os.writeObject(message);
             os.flush();
@@ -285,14 +290,14 @@ public class PeerConnectionHandler implements Runnable{
 
     public void stop() {
         try {
-            System.out.println("Stopping tasks");
-            Thread.sleep(500);
+            System.out.println(this.peerState.getPeerId() + ": Stopping tasks");
             //asyncMessageSender.interrupt();
             this.peerState.stopScheduledTasks();
             this.peerState.getServerSocket().close();
-            running.set(false);
+            running = false;
             os.close();
             is.close();
+            System.out.println(this.peerState.getPeerId() + ": Stopped tasks");
         } catch (Exception e) {
             e.printStackTrace();
         }
