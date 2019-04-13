@@ -156,9 +156,9 @@ public class PeerConnectionHandler implements Runnable{
             if (this.peerState.getBitField().nextClearBit(0) == BitTorrentState.getNumberOfPieces()) {
                 FileHandler.writeToFile(this.peerState);
                 logger.logDownloadComplete();
-//                if (BitTorrentState.hasAllPeersDownloadedFile()) {
-//                    stop();
-//                }
+                if (BitTorrentState.hasAllPeersDownloadedFile()) {
+                    stop();
+                }
             }
         }
         else {
