@@ -28,15 +28,13 @@ public class StartRemotePeers {
 
         for (PeerInfo pInfo : peerList) {
             try {
-                System.out.println("Start remote peer " + pInfo.getPeerID() +  " at " + pInfo.getHostName() );
-                Process p = Runtime.getRuntime().exec("ssh -i .ssh/id_rsa ksingh@" + pInfo.getHostName() + " cd " + path +
-                        "; java peerProcess " + pInfo.getPeerID());
-
-            } catch (IOException ex) {
-                System.out.println(pInfo.getPeerID() + " Exception >:");
-                ex.printStackTrace();
+                System.out.println("Start remote peer " + pInfo.getPeerID() + " at " + pInfo.getHostName());
+                Runtime.getRuntime().exec("ssh -i .ssh/id_rsa ksingh@" + pInfo.getHostName() + " cd " + path +
+                        "; java peerProcess " + pInfo.getPeerID() + " > " + pInfo.peerID + "console.log");
             }
-
+            catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
