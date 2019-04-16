@@ -8,7 +8,6 @@ import java.net.Socket;
 
 public class IncomingConnectionHandler implements Runnable{
 
-    private Socket clientSocket;
     private PeerState peerState;
 
     public IncomingConnectionHandler(PeerState peerState) {
@@ -23,7 +22,7 @@ public class IncomingConnectionHandler implements Runnable{
             this.peerState.setServerSocket(serverSocket);
             while (true) {
                 System.out.println("Peer Id " + peerState.getPeerId() + " accepting connections");
-                clientSocket = serverSocket.accept();
+                Socket clientSocket = serverSocket.accept();
                 System.out.println("Connection is established to " + peerState.getPort() + " from " + clientSocket.getRemoteSocketAddress());
                 Thread t = new Thread(new PeerConnectionHandler(clientSocket, peerState));
                 t.start();

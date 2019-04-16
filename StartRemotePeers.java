@@ -28,7 +28,7 @@ public class StartRemotePeers {
 
         for (PeerInfo pInfo : peerList) {
             try {
-                Thread.sleep(500);
+                Thread.sleep(1000);
                 System.out.println("Start remote peer " + pInfo.getPeerID() + " at " + pInfo.getHostName());
                 Runtime.getRuntime().exec("ssh -i .ssh/id_rsa ksingh@" + pInfo.getHostName() + " cd " + path +
                         "; java peerProcess " + pInfo.getPeerID() + " > " + pInfo.peerID + "console.log");

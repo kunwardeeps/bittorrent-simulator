@@ -152,10 +152,10 @@ public class PeerConnectionHandler implements Runnable{
         int index = getNextInterestingPieceIndex(BitTorrentState.getPeers().get(remotePeerId).getBitField(),
                 this.peerState.getBitField());
         if (index == -1) {
-            NotInterestedMessage notInterestedMessage = new NotInterestedMessage();
-            broadcastMessage(notInterestedMessage);
-            System.out.println(this.peerState.getBitField().nextClearBit(0));
             if (this.peerState.getBitField().nextClearBit(0) == BitTorrentState.getNumberOfPieces()) {
+                NotInterestedMessage notInterestedMessage = new NotInterestedMessage();
+                broadcastMessage(notInterestedMessage);
+                System.out.println(this.peerState.getBitField().nextClearBit(0));
                 FileHandler.writeToFile(this.peerState);
                 logger.logDownloadComplete();
                 if (BitTorrentState.hasAllPeersDownloadedFile()) {
@@ -226,7 +226,7 @@ public class PeerConnectionHandler implements Runnable{
 
         if (interestingPieceIndex == -1) {
             NotInterestedMessage notInterestedMessage = new NotInterestedMessage();
-            sendMessage(notInterestedMessage);
+            //sendMessage(notInterestedMessage);
         }
         else {
             InterestedMessage interestedMessage = new InterestedMessage();
@@ -248,16 +248,18 @@ public class PeerConnectionHandler implements Runnable{
     private void processHandshake(Message response) {
         HandshakeMessage handshakeMessage = (HandshakeMessage) response;
         this.remotePeerId = handshakeMessage.getPeerId();
-        //TODO
+        if (BitTorrentState.getPeers().containsKey(remotePeerId)) {
+            System.out.println(remotePeerId + " validated!");
+        }
+        else {
+            System.out.println(remotePeerId + " invalid!");
+        }
         if (Integer.parseInt(this.peerState.getPeerId()) < Integer.parseInt(this.remotePeerId)) {
             logger.logTcpConnectionFrom(this.remotePeerId);
             this.peerState.getConnections().put(this.remotePeerId, this);
         }
-        if (this.peerState.isHasSharedFile()){
-            BitFieldMessage bitfieldMessage = new BitFieldMessage(this.peerState.getBitField());
-            sendMessage(bitfieldMessage);
-            System.out.println(this.peerState.getPeerId() + " does not have any pieces, so skip sending BITFIELD");
-        }
+        BitFieldMessage bitfieldMessage = new BitFieldMessage(this.peerState.getBitField());
+        sendMessage(bitfieldMessage);
     }
 
     public Message receiveMessage() throws IOException, ClassNotFoundException {
