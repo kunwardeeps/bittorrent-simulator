@@ -146,9 +146,9 @@ public class Logger {
 
 		writeFile(getTimeStamp()
 				+ ": Peer "
-				+ peerId1
-				+ " is unchoked by "
 				+ peerId
+				+ " is unchoked by "
+				+ peerId1
 				+ ".");
 	}
 
@@ -156,9 +156,9 @@ public class Logger {
 
 		writeFile(getTimeStamp()
 				+ ": Peer "
-				+ peerId1
-				+ " is choked by "
 				+ peerId
+				+ " is choked by "
+				+ peerId1
 				+ ".");
 	}
 
