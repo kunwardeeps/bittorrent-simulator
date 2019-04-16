@@ -17,7 +17,9 @@ public class StartRemotePeers {
             sc = new Scanner(new File(PropertiesEnum.PEER_PROPERTIES_CONFIG_PATH.getValue()));
             while (sc.hasNextLine()) {
                 String arr[] = sc.nextLine().split(" ");
-                peerList.add(new PeerInfo(arr[0], arr[1]));
+                if (arr.length > 0) {
+                    peerList.add(new PeerInfo(arr[0], arr[1]));
+                }
             }
         } catch (IOException e) {
             System.out.println("PeerInfo.cfg missing");
