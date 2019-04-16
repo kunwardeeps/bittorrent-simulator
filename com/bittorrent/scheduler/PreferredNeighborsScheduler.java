@@ -45,20 +45,25 @@ public class PreferredNeighborsScheduler extends TimerTask {
         oldPreferredNeighbours.putAll(currentPeerState.getPreferredNeighbours());
 
         Map<String, String> newPreferredNeighbours = new HashMap<>();
-        for (int i = 0; i < currentPeerState.getInterestedNeighbours().size(); i++) {
-            String peerId = maxHeap.poll().getPeerId();
-            if (currentPeerState.getPeerId().equals(peerId)) {
-                // this should not happen
-                i--;
-                continue;
-            }
-            newPreferredNeighbours.put(peerId, peerId);
-            if (!oldPreferredNeighbours.containsKey(peerId)){
-                //System.out.println(this.currentPeerId + ": sending UNCHOKE to "+peerId);
-                if (currentPeerState.getConnections().size() > 0) {
-                    currentPeerState.getConnections().get(peerId).sendMessage(new UnchokeMessage());
+        for (int i = 0; i < BitTorrentState.getNumberOfPreferredNeighbors(); i++) {
+            if (maxHeap.size() > 0) {
+                String peerId = maxHeap.poll().getPeerId();
+                if (currentPeerState.getPeerId().equals(peerId)) {
+                    // this should not happen
+                    i--;
+                    continue;
                 }
+                newPreferredNeighbours.put(peerId, peerId);
+                if (!oldPreferredNeighbours.containsKey(peerId)) {
+                    //System.out.println(this.currentPeerId + ": sending UNCHOKE to "+peerId);
+                    if (currentPeerState.getConnections().size() > 0) {
+                        currentPeerState.getConnections().get(peerId).sendMessage(new UnchokeMessage());
+                    }
 
+                }
+            }
+            else {
+                System.out.println("maxHeap empty");
             }
         }
         for (String peerId: oldPreferredNeighbours.values()) {
