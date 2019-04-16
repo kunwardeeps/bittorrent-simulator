@@ -23,7 +23,6 @@ public class PeerState {
 	private BitSet bitField;
 	private ConcurrentHashMap<Integer, byte[]> fileSplitMap;
 	private ConcurrentHashMap<String, String> preferredNeighbours = new ConcurrentHashMap<>();
-	private ConcurrentHashMap<String, String> chokedNeighbours = new ConcurrentHashMap<>();
 	private Map<String, String> interestedNeighbours = new ConcurrentHashMap<>();
 	private ConcurrentHashMap<String, PeerConnectionHandler> connections = new ConcurrentHashMap<>();
 	private BlockingQueue<Message> queue = new LinkedBlockingQueue<>();
@@ -128,14 +127,6 @@ public class PeerState {
 
 	public void setPreferredNeighbours(ConcurrentHashMap<String, String> preferredNeighbours) {
 		this.preferredNeighbours = preferredNeighbours;
-	}
-
-	public ConcurrentHashMap<String, String> getChokedNeighbours() {
-		return chokedNeighbours;
-	}
-
-	public void setChokedNeighbours(ConcurrentHashMap<String, String> chokedNeighbours) {
-		this.chokedNeighbours = chokedNeighbours;
 	}
 
 	public BitSet getBitField() {

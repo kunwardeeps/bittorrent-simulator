@@ -4,10 +4,9 @@ import com.bittorrent.dtos.BitTorrentState;
 import com.bittorrent.dtos.PeerState;
 import com.bittorrent.handlers.IncomingConnectionHandler;
 import com.bittorrent.handlers.PeerConnectionHandler;
-import com.bittorrent.messaging.AsyncMessageSender;
 import com.bittorrent.scheduler.OptimisticUnchokingScheduler;
 import com.bittorrent.scheduler.PreferredNeighborsScheduler;
-import com.bittorrent.utils.FileHandler;
+import com.bittorrent.utils.FileUtils;
 import com.bittorrent.utils.Logger;
 
 import java.net.Socket;
@@ -26,10 +25,10 @@ public class PeerProcessExecutor implements Runnable{
 	}
 
 	public void init() {
-		FileHandler.makeFiles(this.peerState.getPeerId());
+		FileUtils.makeFilesAndDirectories(this.peerState.getPeerId());
 		if (peerState.isHasSharedFile()) {
 			System.out.println("Shared file found with :"+ peerState.getPeerId());
-			this.peerState.setFileSplitMap(FileHandler.splitFile());
+			this.peerState.setFileSplitMap(FileUtils.splitFile());
 		}
 		else {
 			this.peerState.setFileSplitMap(new ConcurrentHashMap<>());

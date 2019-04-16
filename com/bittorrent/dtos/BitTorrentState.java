@@ -122,24 +122,10 @@ public class BitTorrentState {
 				peers.put(arr[0], peer);
 			}
 		} catch (IOException e) {
-			System.out.println("PeerInfo.cfg missing");
+			e.printStackTrace();
 		}
 		finally {
 			sc.close();
-		}
-	}
-
-	public static void showSenderMessage(Object senderObj, String message){
-		try {
-			String sender = "";
-			if (senderObj != null)
-				sender = senderObj.toString();
-			else
-				sender = "Unknown";
-			System.out.println("Sender " + sender + " Message : " + message);
-		}
-		catch (Exception ex){
-			System.out.println(message);
 		}
 	}
 

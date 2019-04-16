@@ -2,16 +2,14 @@ package com.bittorrent.handlers;
 
 import com.bittorrent.dtos.BitTorrentState;
 import com.bittorrent.dtos.PeerState;
-import com.bittorrent.messaging.AsyncMessageSender;
 import com.bittorrent.messaging.*;
-import com.bittorrent.utils.FileHandler;
+import com.bittorrent.utils.FileUtils;
 import com.bittorrent.utils.Logger;
 
 import java.io.*;
 import java.net.Socket;
 import java.util.BitSet;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class PeerConnectionHandler implements Runnable{
 
@@ -156,7 +154,7 @@ public class PeerConnectionHandler implements Runnable{
                 NotInterestedMessage notInterestedMessage = new NotInterestedMessage();
                 broadcastMessage(notInterestedMessage);
                 System.out.println(this.peerState.getBitField().nextClearBit(0));
-                FileHandler.writeToFile(this.peerState);
+                FileUtils.joinPiecesAndWriteFile(this.peerState);
                 logger.logDownloadComplete();
                 if (BitTorrentState.hasAllPeersDownloadedFile()) {
                     stopAllConnections();
