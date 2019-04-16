@@ -59,7 +59,6 @@ public class PreferredNeighborsScheduler extends TimerTask {
                     if (currentPeerState.getConnections().size() > 0) {
                         currentPeerState.getConnections().get(peerId).sendMessage(new UnchokeMessage());
                     }
-
                 }
             }
             else {

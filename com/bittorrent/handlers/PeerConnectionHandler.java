@@ -129,6 +129,8 @@ public class PeerConnectionHandler implements Runnable{
         if (!this.peerState.getBitField().get(index)) {
             System.out.println(this.peerState.getPeerId() + "Sending interested message for piece" + index);
             sendMessage(new InterestedMessage());
+            RequestMessage requestMessage = new RequestMessage(index);
+            sendMessage(requestMessage);
         }
     }
 
