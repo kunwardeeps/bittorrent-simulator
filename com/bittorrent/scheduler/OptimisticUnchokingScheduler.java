@@ -41,8 +41,8 @@ public class OptimisticUnchokingScheduler extends TimerTask {
         }
         Collections.shuffle(chokedNeighbours);
         String optimisticUnchokedPeerId = chokedNeighbours.get(0);
+        currentPeerState.setOptimisticUnchokedPeerId(optimisticUnchokedPeerId);
         currentPeerState.getConnections().get(optimisticUnchokedPeerId).sendMessage(new UnchokeMessage());
-        currentPeerState.getPreferredNeighbours().put(optimisticUnchokedPeerId, optimisticUnchokedPeerId);
         Logger.getLogger(currentPeerState.getPeerId()).logNewOptimisticallyUnchokedNeighbor(optimisticUnchokedPeerId);
     }
 }

@@ -185,7 +185,9 @@ public class PeerConnectionHandler implements Runnable{
     private void processRequest(Message receivedMsg) {
         RequestMessage requestMessage = (RequestMessage) receivedMsg;
         Integer index = (Integer) requestMessage.getPayload();
-        if (this.peerState.getPreferredNeighbours().contains(remotePeerId)) {
+        String optimisticUnchokedPeerId = this.peerState.getOptimisticUnchokedPeerId();
+        if (this.peerState.getPreferredNeighbours().contains(remotePeerId) || (optimisticUnchokedPeerId != null &&
+                optimisticUnchokedPeerId.equals(remotePeerId))) {
             if (this.peerState.getBitField().get(index)) {
                 PieceMessage pieceMessage = new PieceMessage(this.peerState.getFileSplitMap().get(index), index);
                 sendMessage(pieceMessage);
@@ -251,6 +253,7 @@ public class PeerConnectionHandler implements Runnable{
         }
         else {
             System.out.println(remotePeerId + " invalid!");
+            return;
         }
         if (Integer.parseInt(this.peerState.getPeerId()) < Integer.parseInt(this.remotePeerId)) {
             logger.logTcpConnectionFrom(this.remotePeerId);

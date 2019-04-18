@@ -23,6 +23,7 @@ public class PeerState {
 	private BitSet bitField;
 	private ConcurrentHashMap<Integer, byte[]> fileSplitMap;
 	private ConcurrentHashMap<String, String> preferredNeighbours = new ConcurrentHashMap<>();
+	private String optimisticUnchokedPeerId;
 	private Map<String, String> interestedNeighbours = new ConcurrentHashMap<>();
 	private ConcurrentHashMap<String, PeerConnectionHandler> connections = new ConcurrentHashMap<>();
 	private BlockingQueue<Message> queue = new LinkedBlockingQueue<>();
@@ -31,6 +32,14 @@ public class PeerState {
 	private Timer timer2;
 	private ServerSocket serverSocket;
 	private AtomicBoolean downloadComplete = new AtomicBoolean(false);
+
+	public String getOptimisticUnchokedPeerId() {
+		return optimisticUnchokedPeerId;
+	}
+
+	public void setOptimisticUnchokedPeerId(String optimisticUnchokedPeerId) {
+		this.optimisticUnchokedPeerId = optimisticUnchokedPeerId;
+	}
 
 	public boolean getDownloadComplete() {
 		return downloadComplete.get();

@@ -66,6 +66,10 @@ public class PreferredNeighborsScheduler extends TimerTask {
             }
         }
         for (String peerId: oldPreferredNeighbours.values()) {
+            if (currentPeerState.getOptimisticUnchokedPeerId() != null &&
+                currentPeerState.getOptimisticUnchokedPeerId().equals(peerId)) {
+                continue;
+            }
             if (!newPreferredNeighbours.containsKey(peerId)) {
                 //System.out.println(this.currentPeerId + ": sending CHOKE to "+peerId);
                 if (currentPeerState.getConnections().size() > 0) {
